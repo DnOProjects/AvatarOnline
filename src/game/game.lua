@@ -1,6 +1,6 @@
-local logic = {}
+local game = {}
 
-function logic.update(dt,objects)
+function game.update(dt,objects)
     for i, obj in ipairs(objects) do
         if not obj.trash then
             if obj.data.vel then server.moveObject(i,obj.pos+obj.data.vel) end --apply velocity
@@ -16,7 +16,7 @@ function logic.update(dt,objects)
     end
 end
 
-function logic.createObject(objectType,request)
+function game.createObject(objectType,request)
     local object
     if objectType == 'player' then object = utils.copy({player=true,data={clientID=request.clientID}}) end
     if objectType == 'bullet' then object = utils.copy({bullet=true,data={vel=request.vel,ownerID=request.ownerID}}) end
@@ -26,4 +26,4 @@ function logic.createObject(objectType,request)
     return object
 end
 
-return logic
+return game
