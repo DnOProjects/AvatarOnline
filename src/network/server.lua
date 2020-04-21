@@ -4,7 +4,7 @@ local server = {
 }
 local clients = {} --to store the clients when they connect
 local clientRequests = {} --to store accumulated requests for each client
-local objects = {a=12}
+local objects = {}
 
 local function broadcast() --send all accumulated requests
   for i, requests in ipairs(clientRequests) do
@@ -24,7 +24,6 @@ function server.start(address)
   if server.host then print('Server: started at '..address) end
 end
 function server.update(dt) --Called before main game updates
-  print(#objects)
   objMan.bind(objects)
   for i=1,#clientRequests do clientRequests[i] = {} end --clear requests
   net.getEvents(server) --get events triggered by clients and call the appropriate handler method
