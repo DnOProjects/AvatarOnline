@@ -12,7 +12,7 @@ graphics = require 'src/graphics/graphics'
 logic = require 'src/game/logic'
 
 local host = true --True: runs a server and a client; False: runs just a client
-local ip = --[['localhost']]'92.62.10.253'
+local ip = 'localhost' --'92.62.10.253'
 local port = '25565'
 
 function love.load()
@@ -24,8 +24,8 @@ function love.load()
 	end
 	xPadding = (love.graphics.getWidth() - (1920 * gameRenderScale)) / 2
 	yPadding = (love.graphics.getHeight() - (1080 * gameRenderScale)) / 2
-  if host then server.start('*:'..port) end
-  client.connect(ip..':'..port)
+	if host then server.start('*:'..port) end
+	client.connect(ip..':'..port)
 end
 
 function love.update(dt)
