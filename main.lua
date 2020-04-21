@@ -5,44 +5,48 @@ require 'src/classes/color'
 Constructors = {vector = ConstructVec, color = ConstructCol}
 --Global modules
 enet = require 'enet' --built-in module
-assets = require 'assets/assets'
+assets = require 'src/assets'
 debug, input, objMan, utils = require 'src/debugger', require 'src/input', require 'src/objectManager', require 'src/utils'
 client, server, bitser, net = require 'src/network/client', require 'src/network/server', require 'src/network/bitser', require 'src/network/net'
 graphics = require 'src/graphics/graphics'
-logic = require 'src/game/logic'
+scale = require 'src/graphics/scale'
+ui = require 'src/graphics/ui'
+game = require 'src/game/game'
 
 local host = true --True: runs a server and a client; False: runs just a client
-local ip = 'localhost' --'92.62.10.253'
+local ip = 'localhost'
+if (host == false) then
+	ip = '92.62.10.253'
+end
 local port = '25565'
 
 function love.load()
-	mouseX = 0
-	mouseY = 0
-	gameRenderScale = love.graphics.getHeight()/1080
-	if (gameRenderScale > love.graphics.getWidth()/1920) then
-		gameRenderScale = love.graphics.getWidth()/1920
-	end
-	xPadding = (love.graphics.getWidth() - (1920 * gameRenderScale)) / 2
-	yPadding = (love.graphics.getHeight() - (1080 * gameRenderScale)) / 2
+	scale.load()
 	if host then server.start('*:'..port) end
 	client.connect(ip..':'..port)
+	ui.load()
 end
 
 function love.update(dt)
-	mouseX = love.mouse.getX() / gameRenderScale - xPadding
-	mouseY = love.mouse.getY() / gameRenderScale - yPadding
+	scale.update()
 	debug.update(dt)
-	if host then server.update(dt) end --Gets clients' requests, runs the game, sends instructions to clients
-	client.update(dt) --Gets server's instructions, sends requests to server
+	if currentPage =="inGame" then
+		if host then server.update(dt) end --Gets clients' requests, runs the game, sends instructions to clients
+		client.update(dt) --Gets server's instructions, sends requests to server
+	end
+	ui.update()
 end
 
 function love.draw()
 	love.graphics.push()
-	love.graphics.scale(gameRenderScale)
-	love.graphics.translate(xPadding, yPadding)
+	scale.draw()
 
-	client.draw() --Draws the game from the client's incomplete store of game objects
+	ui.drawBackgrounds()
+	if currentPage =="inGame" then
+		client.draw() --Draws the game from the client's incomplete store of game objects
+	end
   	debug.draw()
+  	ui.draw()
 
 	love.graphics.pop()
 end

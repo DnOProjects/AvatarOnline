@@ -30,6 +30,7 @@ end
 function debugger.draw()
   for i,v in ipairs(log) do
     v.color:use()
+    love.graphics.setFont(love.graphics.newFont(20))
     love.graphics.print(v.text,0,20*(i-1))
     Colors.white:use()
   end
