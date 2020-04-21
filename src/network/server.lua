@@ -4,7 +4,7 @@ local server = {
 }
 local clients = {} --to store the clients when they connect
 local clientRequests = {} --to store accumulated requests for each client
-local objects = {}
+local objects = {a=12}
 
 local function broadcast() --send all accumulated requests
   for i, requests in ipairs(clientRequests) do
@@ -13,10 +13,9 @@ local function broadcast() --send all accumulated requests
 end
 local function requestAddObj(object,clientID) --requests all if client == nil
   if not object.data.internal then --don't transfer the object if not used by client
-    local dataCopy = utils.copy(object.data)
-    object.data = nil --nullify object data to avoid sending unnessesary details
-    server.request({object=object},"addObj",clientID)
-    object.data = dataCopy --restore data to the object
+    local copy = utils.copy(object)
+    copy.data = nil --nullify object data to avoid sending unnessesary details
+    server.request({object=copy},"addObj",clientID)
   end
 end
 

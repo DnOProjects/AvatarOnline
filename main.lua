@@ -35,7 +35,7 @@ function love.update(dt)
 	---  print("--------------server---------------")
 	if host then server.update(dt) end --Gets clients' requests, runs the game, sends instructions to clients
 	--  print("--------------client--------------")
-	client.update(dt) --Gets server's instructions, sends requests to server
+	client.update(dt) --Gets server's instructions, sends requests to serve
 end
 
 function love.draw()
