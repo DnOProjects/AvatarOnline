@@ -29,13 +29,16 @@ function client.request(request,requestType)
   if requestType then request.type = requestType end
   table.insert(requests,request)
 end
-function client.handleRequest(server,request) --requests are recieved from the server and each have a type
+function client.handleRequest(from,request) --requests are recieved from the server and each have a type
   --local variables populated for convenience
   local object
   if request.id then object = objects[request.id] end
 
   if request.type=='setPlayerID' then client.playerID = request.id end
-  if request.type=='addObj' then objMan.addObject(request.object) end
+  if request.type=='addObj' then
+    if request.object.path and server:round_trip_time()<200 then request.object.path.time = server:round_trip_time()/2000 end
+    objMan.addObject(request.object)
+  end
   if request.type=='removeObj' then objMan.removeObject(request.id) end
   if request.type=='moveObj' then object.pos = request.pos end
 

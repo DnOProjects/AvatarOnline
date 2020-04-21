@@ -33,6 +33,13 @@ function server.update(dt) --Called before main game updates
   debug.logServer(objects,server)
   objMan.unbind()
 end
+function server.draw()
+  Col(1,1,1,0.4):use()
+  for i,obj in ipairs(objects) do
+    love.graphics.circle("fill",obj.pos.x,obj.pos.y,10)
+  end
+  Col(1,1,1):use()
+end
 function server.request(request,requestType,clientID)
   if requestType then request.type = requestType end
   if clientID then table.insert(clientRequests[clientID],request) --send to one client

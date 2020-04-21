@@ -13,7 +13,7 @@ scale = require 'src/graphics/scale'
 ui = require 'src/graphics/ui'
 game = require 'src/game/game'
 
-local host = false --True: runs a server and a client; False: runs just a client
+local host = true --True: runs a server and a client; False: runs just a client
 local ip = 'localhost'
 if (host == false) then
 	ip = '92.62.10.253'
@@ -45,8 +45,9 @@ function love.draw()
 	if currentPage =="inGame" then
 		client.draw() --Draws the game from the client's incomplete store of game objects
 	end
-  	debug.draw()
-  	ui.draw()
+	if host then server.draw() end --for debug ONLY
+  debug.draw()
+  ui.draw()
 
 	love.graphics.pop()
 end

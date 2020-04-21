@@ -12,7 +12,7 @@ function graphics.draw(objects)
       local pos = obj.pos
       if obj.path then pos = obj.path.start + obj.path.vel*obj.path.time end
       if obj.bullet then
-        love.graphics.draw(assets.get('image','water'),pos.x,pos.y,0,1/6)
+        love.graphics.draw(assets.get('image','water'),pos.x,pos.y,0,1/6,1/6,60,60)
       elseif obj.player then
         local char = 'katara'
         if i~=client.playerID then char = 'iroh' end
