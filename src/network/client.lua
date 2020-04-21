@@ -17,6 +17,7 @@ function client.update(dt) --Called before main game updates
   objMan.bind(objects)
   net.getEvents(client)
   if client.playerID then client.player = objects[client.playerID] end --update player
+  graphics.update(dt,objects)
   input.update(dt)
   objMan.clearTrash()
   if server then debug.logClient(server,objects,client) end

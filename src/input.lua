@@ -4,7 +4,7 @@ local moveDirs = {w=Vec(0,-1),a=Vec(-1,0),s=Vec(0,1),d=Vec(1,0)}
 local mousepresses = {} --stores mousepresses until updating input
 local function handleMousepress(press)
     if press.button==1 then
-        local vel = (press.pos-client.player.pos):setMag(10)
+        local vel = (press.pos-client.player.pos):setMag(200)
         for i=-1,1 do
           client.request({objectType='bullet',vel=vel:rotate(i/10),pos=client.player.pos,ownerID=client.playerID},'createObj')
         end

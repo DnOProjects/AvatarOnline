@@ -13,7 +13,7 @@ scale = require 'src/graphics/scale'
 ui = require 'src/graphics/ui'
 game = require 'src/game/game'
 
-local host = true --True: runs a server and a client; False: runs just a client
+local host = false --True: runs a server and a client; False: runs just a client
 local ip = 'localhost'
 if (host == false) then
 	ip = '92.62.10.253'

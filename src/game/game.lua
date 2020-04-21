@@ -3,7 +3,7 @@ local game = {}
 function game.update(dt,objects)
     for i, obj in ipairs(objects) do
         if not obj.trash then
-            if obj.data.vel then server.moveObject(i,obj.pos+obj.data.vel) end --apply velocity
+            if obj.data.vel then obj.pos = obj.pos+obj.data.vel*dt end --apply velocity
             if obj.player then
                 for j, objB in ipairs(objects) do
                     if objB.bullet and objB.data.ownerID~=obj.id and objB.pos..obj.pos < 10 then
@@ -19,7 +19,7 @@ end
 function game.createObject(objectType,request)
     local object
     if objectType == 'player' then object = utils.copy({player=true,data={clientID=request.clientID}}) end
-    if objectType == 'bullet' then object = utils.copy({bullet=true,data={vel=request.vel,ownerID=request.ownerID}}) end
+    if objectType == 'bullet' then object = utils.copy({bullet=true,path={start=request.pos,vel=request.vel,time=0},data={vel=request.vel,ownerID=request.ownerID}}) end
     object.pos = request.pos or Vec()
 
     server.addObject(object)
