@@ -8,9 +8,16 @@ function graphics.draw(objects)
   end
 
   for i,obj in ipairs(objects) do
-    if obj.bullet then love.graphics.setColor(1, 0, 0) end
-    if not obj.trash then love.graphics.circle('fill',obj.pos.x,obj.pos.y,10) end
-    love.graphics.setColor(1, 1, 1)
+    if not obj.trash then
+      if obj.bullet then
+        love.graphics.draw(assets.get('image','water'),obj.pos.x,obj.pos.y,0,1/6)
+      elseif obj.player then
+        local char = 'katara'
+        if i~=client.playerID then char = 'iroh' end
+        love.graphics.draw(assets.get('image',char),obj.pos.x,obj.pos.y,0,1,1,60,60)
+      end
+      love.graphics.setColor(1, 1, 1)
+    end
   end
 end
 

@@ -5,7 +5,7 @@ local mousepresses = {} --stores mousepresses until updating input
 local function handleMousepress(press)
     if press.button==1 then
         local vel = (press.pos-client.player.pos):setMag(10)
-        for i=-3,3 do
+        for i=-1,1 do
           client.request({objectType='bullet',vel=vel:rotate(i/10),pos=client.player.pos,ownerID=client.playerID},'createObj')
         end
     end

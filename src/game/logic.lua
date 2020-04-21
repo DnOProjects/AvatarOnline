@@ -11,15 +11,6 @@ function logic.update(dt,objects)
                         server.removeObject(i)
                     end
                 end
-                if obj.pos.x > 1920 then
-                    server.moveObject(i,Vec(-10, 0))
-                elseif obj.pos.x < 0 then
-                    server.moveObject(i,Vec(10, 0))
-                elseif obj.pos.y > 1080 then
-                    server.moveObject(i,Vec(0, -10))
-                elseif obj.pos.y < 0 then
-                    server.moveObject(i,Vec(0, 10))
-                end
             elseif obj.pos.x > 1920 or obj.pos.x<0 or obj.pos.y > 1080 or obj.pos.y<0 then server.removeObject(i) end
         end
     end

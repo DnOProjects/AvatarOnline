@@ -45,8 +45,12 @@ end
 function server.handleRequest(client,request)
   if request.type=='createObj' then logic.createObject(request.objectType,request)
   elseif request.type=='movePlayer' then
-    server.moveObject(request.id,objects[request.id].pos+request.vec)
-  --  server.moveObject(request.id,request.vec)
+    local newPos = objects[request.id].pos+request.vec
+    if newPos.x<0 then newPos.x=0 end
+    if newPos.x>1920 then newPos.x=1920 end
+    if newPos.y<0 then newPos.y=0 end
+    if newPos.y>1080 then newPos.y=1080 end
+    server.moveObject(request.id,newPos)
   end
 end
 function server.handleConnect(client)
@@ -82,7 +86,7 @@ function server.removeObject(id)
   end
 end
 function server.moveObject(id,pos)
-  if objects[id] then
+  if objects[id] and objects[id].pos~=pos then
     objects[id].pos = pos
     server.request({pos=pos,id=id},'moveObj')
   end
