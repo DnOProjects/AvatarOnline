@@ -1,3 +1,14 @@
+--Global classes
+require 'src/classes/class'
+require 'src/classes/vector'
+require 'src/classes/color'
+Constructors = {vector = ConstructVec, color = ConstructCol}
+--Global modules
+enet = require 'enet' --built-in module
+assets = require 'assets/assets'
+debug, input, objMan, utils = require 'src/debugger', require 'src/input', require 'src/objectManager', require 'src/utils'
+client, server, bitser, net = require 'src/network/client', require 'src/network/server', require 'src/network/bitser', require 'src/network/net'
+graphics = require 'src/graphics/graphics'
 logic = require 'src/game/logic'
 
 local host = true --True: runs a server and a client; False: runs just a client
