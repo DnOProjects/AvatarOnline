@@ -1,0 +1,12 @@
+All packets are send in "reliable" mode - from the lua enet docs:
+  "Reliable packets are guaranteed to arrive, and arrive in the order in which they are sent"
+
+Localhost testing:
+- client --> server packets take ~ 2 frames to reach the server
+
+TODO:
+  1:
+  2:
+    - reduce stutter by replacing moves with goto
+  3:
+    - provide instant feedback on input
