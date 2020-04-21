@@ -24,6 +24,7 @@ function server.start(address)
   if server.host then print('Server: started at '..address) end
 end
 function server.update(dt) --Called before main game updates
+  print(#objects)
   objMan.bind(objects)
   for i=1,#clientRequests do clientRequests[i] = {} end --clear requests
   net.getEvents(server) --get events triggered by clients and call the appropriate handler method

@@ -20,7 +20,7 @@ function logic.update(dt,objects)
                 elseif obj.pos.y < 0 then
                     server.moveObject(i,Vec(0, 10))
                 end
-            end
+            elseif obj.pos.x > 1000 or obj.pos.x<0 or obj.pos.y > 1000 or obj.pos.y<0 then server.removeObject(i) end
         end
     end
 end
