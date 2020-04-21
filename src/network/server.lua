@@ -27,7 +27,7 @@ function server.update(dt) --Called before main game updates
   objMan.bind(objects)
   for i=1,#clientRequests do clientRequests[i] = {} end --clear requests
   net.getEvents(server) --get events triggered by clients and call the appropriate handler method
-  logic.update(dt,objects) --process game logic and send requests based from resultant state changes
+  game.update(dt,objects) --process game logic and send requests based from resultant state changes
   objMan.clearTrash()
   broadcast()
   debug.logServer(objects,server)
@@ -43,7 +43,7 @@ end
 
 --Handler functions
 function server.handleRequest(client,request)
-  if request.type=='createObj' then logic.createObject(request.objectType,request)
+  if request.type=='createObj' then game.createObject(request.objectType,request)
   elseif request.type=='movePlayer' then
     local newPos = objects[request.id].pos+request.vec
     if newPos.x<0 then newPos.x=0 end
@@ -66,7 +66,7 @@ function server.handleConnect(client)
   clients[clientID] = client
 
   for i=1,#objects do requestAddObj(objects[i],clientID) end   --Send all current objects to new client
-  local player = logic.createObject('player',{clientID=clientID}) --Add new player object
+  local player = game.createObject('player',{clientID=clientID}) --Add new player object
   server.request({id=player.id},'setPlayerID',clientID) --Send the client their player's id
 end
 function server.handleDisconnect(client)
