@@ -22,9 +22,7 @@ end
 
 function love.update(dt)
   debug.update(dt)
----  print("--------------server---------------")
   if host then server.update(dt) end --Gets clients' requests, runs the game, sends instructions to clients
---  print("--------------client--------------")
   client.update(dt) --Gets server's instructions, sends requests to server
 end
 
