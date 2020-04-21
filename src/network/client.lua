@@ -36,7 +36,7 @@ function client.handleRequest(server,request) --requests are recieved from the s
   if request.type=='setPlayerID' then client.playerID = request.id end
   if request.type=='addObj' then objMan.addObject(request.object) end
   if request.type=='removeObj' then objMan.removeObject(request.id) end
-  if request.type=='moveObj' then object.pos = object.pos+request.vec end
+  if request.type=='moveObj' then object.pos = request.pos end
 
 end
 

@@ -25,7 +25,7 @@ function input.update(dt)
             end
         end
         if moveDir~=Vec() then
-            client.request({vec=moveDir,id=client.playerID},'moveObj')
+            client.request({vec=moveDir,id=client.playerID},'movePlayer')
         end
     end
 end

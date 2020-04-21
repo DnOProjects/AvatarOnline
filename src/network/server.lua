@@ -44,7 +44,10 @@ end
 --Handler functions
 function server.handleRequest(client,request)
   if request.type=='createObj' then logic.createObject(request.objectType,request)
-  elseif request.type=='moveObj' then server.moveObject(request.id,request.vec) end
+  elseif request.type=='movePlayer' then
+    server.moveObject(request.id,objects[request.id].pos+request.vec)
+  --  server.moveObject(request.id,request.vec)
+  end
 end
 function server.handleConnect(client)
   --Add client
@@ -78,10 +81,10 @@ function server.removeObject(id)
     server.request({id=id},'removeObj')
   end
 end
-function server.moveObject(id,vec)
+function server.moveObject(id,pos)
   if objects[id] then
-    objects[id].pos = objects[id].pos + vec
-    server.request({vec=vec,id=id},'moveObj')
+    objects[id].pos = pos
+    server.request({pos=pos,id=id},'moveObj')
   end
 end
 
