@@ -27,8 +27,8 @@ end
 
 function logic.createObject(objectType,request)
     local object
-    if objectType == 'player' then object = {player=true,data={clientID=request.clientID}} end
-    if objectType == 'bullet' then object = {bullet=true,data={vel=request.vel,ownerID=request.ownerID}} end
+    if objectType == 'player' then object = utils.copy({player=true,data={clientID=request.clientID}}) end
+    if objectType == 'bullet' then object = utils.copy({bullet=true,data={vel=request.vel,ownerID=request.ownerID}}) end
     object.pos = request.pos or Vec()
 
     server.addObject(object)
