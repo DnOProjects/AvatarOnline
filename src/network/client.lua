@@ -1,5 +1,3 @@
-local input, graphics, objMan, net = require 'input', require 'graphics', require 'objectManager', require 'net'
-
 local client = {
   nodeType='Client',
   host=enet.host_create(), --unbound (meaning it cannot be connect to) host object (self)

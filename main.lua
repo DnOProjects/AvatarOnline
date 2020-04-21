@@ -1,11 +1,15 @@
 --Global classes
-require 'class'
-require 'vector'
-require 'color'
+require 'src/classes/class'
+require 'src/classes/vector'
+require 'src/classes/color'
 Constructors = {vector = ConstructVec, color = ConstructCol}
 --Global modules
-debug, enet, bitser, utils = require 'debugger', require 'enet', require 'bitser', require 'utils'
-client, server = require 'client', require 'server'
+enet = require 'enet' --built-in module
+assets = require 'assets/assets'
+debug, input, objMan, utils = require 'src/debugger', require 'src/input', require 'src/objectManager', require 'src/utils'
+client, server, bitser, net = require 'src/network/client', require 'src/network/server', require 'src/network/bitser', require 'src/network/net'
+graphics = require 'src/graphics/graphics'
+logic = require 'src/game/logic'
 
 local host = true --True: runs a server and a client; False: runs just a client
 local ip = --[['localhost']]'92.62.10.253'
@@ -18,7 +22,9 @@ end
 
 function love.update(dt)
   debug.update(dt)
+---  print("--------------server---------------")
   if host then server.update(dt) end --Gets clients' requests, runs the game, sends instructions to clients
+--  print("--------------client--------------")
   client.update(dt) --Gets server's instructions, sends requests to server
 end
 

@@ -12,11 +12,15 @@ function objMan.addObject(object)
       break
     end
   end
+  --if object.id==#objects+1 then print("add on top") else print("replace trash") end
   objects[object.id] = object
 end
-function objMan.removeObject(id) objects[id].trash = true end
+function objMan.removeObject(id)
+   objects[id].trash = true
+  -- print("trash")
+ end
 function objMan.clearTrash()
-  for i=#objects,1,-1 do
+for i=#objects,1,-1 do
     if objects[i].trash then table.remove(objects,i)
     else break end
   end

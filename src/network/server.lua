@@ -1,5 +1,3 @@
-local  objMan, net, logic = require 'objectManager', require 'net', require 'logic'
-
 local server = {
   nodeType='Server',
   host=nil, --host object (self) bound to an address
@@ -61,7 +59,7 @@ function server.handleConnect(client)
   clientRequests[clientID] = {}
   clients[clientID] = client
 
-  for i,object in ipairs(objects) do requestAddObj(object,clientID) end   --Send all current objects to new client
+  for i=1,#objects do requestAddObj(objects[i],clientID) end   --Send all current objects to new client
   local player = logic.createObject('player',{clientID=clientID}) --Add new player object
   server.request({id=player.id},'setPlayerID',clientID) --Send the client their player's id
 end
