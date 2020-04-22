@@ -8,7 +8,7 @@ function graphics.draw()
   end
 
   for i,obj in ipairs(Objects) do
-    if not obj.trash then
+    if (not obj.trash) and (not obj.dead) then
       local pos
       --Find pos
       if obj.pos then pos = obj.pos end

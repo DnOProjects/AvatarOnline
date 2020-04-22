@@ -1,7 +1,7 @@
 local Object = require 'src/game/object'
 
-local Player = Object:new('player',{player=true,lastR=0,clientID=nil,getDrawData=function(self)
-  return {pos=self.pos,img='katara',r=self.lastR}
+local Player = Object:new('player',{player=true,dead=false,lastR=0,clientID=nil,getDrawData=function(self)
+  return {pos=self.pos,img='katara',r=self.lastR,dead=self.dead}
 end})
 
 function Player:move(request)
@@ -16,11 +16,17 @@ function Player:move(request)
 end
 
 function Player:useAbility(name,request)
-  if not self.trash then
+  if not self.dead then
     if name=='waterSpray' then
       for i=-5,5 do game.createObject('bullet',{vel=request.dir:rotate(i/10)*200,pos=self.pos,ownerID=request.id}) end
     end
   end
+end
+
+function Player:die()
+  self.dead = true
+  server.request({},'youDied',self.clientID)
+  server.updateClientData(self)
 end
 
 return Player

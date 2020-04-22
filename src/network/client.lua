@@ -44,6 +44,7 @@ function client.handleRequest(from,request) --requests are recieved from the ser
     client.playerID = request.playerID
     client.connected = true
   end
+  if request.type=='youDied' then currentPage = "deathScreen" end
   if request.type=='addObj' then
     if request.object.path and server:round_trip_time()<200 then request.object.path.time = server:round_trip_time()/2000 end
     objMan.addObject(request.object,request.append)
