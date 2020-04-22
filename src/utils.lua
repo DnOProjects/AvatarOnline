@@ -46,4 +46,8 @@ function utils.copy(x)
     return copy
 end
 
+function utils.degreesToRadians(degrees)
+    return degrees * (3.14159265359/180)
+end
+
 return utils
