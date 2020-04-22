@@ -5,13 +5,10 @@ function game.update(dt,objects)
         if not obj.trash then
             if obj.data.vel then obj.pos = obj.pos+obj.data.vel*dt end --apply velocity
             if obj.player then
-                for j, objB in ipairs(objects) do
-                    if objB.bullet and objB.data.ownerID~=obj.id and objB.pos..obj.pos < 10 then
-                        print("DEATH!")
-                        server.removeObject(i)
-                    end
-                end
-            elseif obj.pos.x > 1920 or obj.pos.x<0 or obj.pos.y > 1080 or obj.pos.y<0 then server.removeObject(i) end
+                player.updateGame(i, obj, objects)
+            elseif obj.pos.x > 1920 or obj.pos.x < 0 or obj.pos.y > 1080 or obj.pos.y < 0 then
+                server.removeObject(i)
+            end
         end
     end
 end

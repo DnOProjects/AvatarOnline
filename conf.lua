@@ -1,5 +1,5 @@
 function love.conf(t)
-	t.console = true
+	--t.console = true
 	t.title = "Elements Online"
 	t.window.width = 0
 	t.window.height = 0

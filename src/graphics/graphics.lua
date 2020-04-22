@@ -14,9 +14,7 @@ function graphics.draw(objects)
       if obj.bullet then
         love.graphics.draw(assets.get('image','water'),pos.x,pos.y,0,1/6,1/6,60,60)
       elseif obj.player then
-        local char = 'katara'
-        if i~=client.playerID then char = 'iroh' end
-        love.graphics.draw(assets.get('image',char),pos.x,pos.y,0,1,1,60,60)
+        player.draw(i, pos)
       end
       love.graphics.setColor(1, 1, 1)
     end

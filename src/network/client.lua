@@ -12,35 +12,39 @@ local function broadcast() --sends all accumulated requests
 end
 
 function client.connect(address) server = client.host:connect(address) end
-function client.update(dt) --Called before main game updates
-  requests = {} --clear requests
-  objMan.bind(objects)
-  net.getEvents(client)
-  if client.playerID then client.player = objects[client.playerID] end --update player
-  graphics.update(dt,objects)
-  input.update(dt)
-  objMan.clearTrash()
-  if server then debug.logClient(server,objects,client) end
-  broadcast()
-  objMan.unbind()
-end
-function client.draw() graphics.draw(objects) end
-function client.request(request,requestType)
-  if requestType then request.type = requestType end
-  table.insert(requests,request)
-end
-function client.handleRequest(from,request) --requests are recieved from the server and each have a type
-  --local variables populated for convenience
-  local object
-  if request.id then object = objects[request.id] end
 
-  if request.type=='setPlayerID' then client.playerID = request.id end
-  if request.type=='addObj' then
-    if request.object.path and server:round_trip_time()<200 then request.object.path.time = server:round_trip_time()/2000 end
-    objMan.addObject(request.object)
-  end
-  if request.type=='removeObj' then objMan.removeObject(request.id) end
-  if request.type=='moveObj' then object.pos = request.pos end
+function client.update(dt) --Called before main game updates
+    requests = {} --clear requests
+    objMan.bind(objects)
+    net.getEvents(client)
+    if client.playerID then client.player = objects[client.playerID] end --update player
+    graphics.update(dt,objects)
+    input.update(dt)
+    objMan.clearTrash()
+    if server then debug.logClient(server,objects,client) end
+    broadcast()
+    objMan.unbind()
+end
+
+function client.draw() graphics.draw(objects) end
+
+function client.request(request,requestType)
+    if requestType then request.type = requestType end
+    table.insert(requests,request)
+end
+
+function client.handleRequest(from,request) --requests are recieved from the server and each have a type
+    --local variables populated for convenience
+    local object
+    if request.id then object = objects[request.id] end
+
+    if request.type=='setPlayerID' then client.playerID = request.id end
+    if request.type=='addObj' then
+        if request.object.path and server:round_trip_time()<200 then request.object.path.time = server:round_trip_time()/2000 end
+        objMan.addObject(request.object)
+    end
+    if request.type=='removeObj' then objMan.removeObject(request.id) end
+    if request.type=='moveObj' then object.pos = request.pos end
 
 end
 
