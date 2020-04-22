@@ -7,15 +7,24 @@ local clientRequests = {} --to store accumulated requests for each client
 local objects = {}
 
 local function broadcast() --send all accumulated requests
-  for i, requests in ipairs(clientRequests) do
-    if #requests>0 then clients[i]:send(bitser.dumps(requests)) end
-  end
+    for i, requests in ipairs(clientRequests) do
+        if #requests>0 then clients[i]:send(bitser.dumps(requests)) end
+    end
+end
+
+local function requestAddObj(object,clientID) --requests all if client == nil
+    if not object.data.internal then --don't transfer the object if not used by client
+        local copy = utils.copy(object)
+        copy.data = nil --nullify object data to avoid sending unnessesary details
+        server.request({object=copy},"addObj",clientID)
+    end
 end
 
 function server.start(address)
-  server.host = enet.host_create(address)
-  if server.host then print('Server: started at '..address) end
+    server.host = enet.host_create(address)
+    if server.host then print('Server: started at '..address) end
 end
+
 function server.update(dt) --Called before main game updates
   objMan.bind(objects)
   for i=1,#clientRequests do clientRequests[i] = {} end --clear requests
@@ -26,19 +35,21 @@ function server.update(dt) --Called before main game updates
   objMan.clearTrash()
   objMan.unbind()
 end
+
 function server.draw()
-  Col(1,1,1,0.4):use()
-  for i,obj in ipairs(objects) do
-    love.graphics.circle("fill",obj.pos.x,obj.pos.y,10)
-  end
-  Col(1,1,1):use()
+    Col(1,1,1,0.4):use()
+    for i,obj in ipairs(objects) do
+        love.graphics.circle("fill",obj.pos.x,obj.pos.y,10)
+    end
+    Col(1,1,1):use()
 end
+
 function server.request(request,requestType,clientID)
-  if requestType then request.type = requestType end
-  if clientID then table.insert(clientRequests[clientID],request) --send to one client
-  else --send to all clients
-    for i,requests in ipairs(clientRequests) do table.insert(requests,request) end
-  end
+    if requestType then request.type = requestType end
+    if clientID then table.insert(clientRequests[clientID],request) --send to one client
+    else --send to all clients
+        for i,requests in ipairs(clientRequests) do table.insert(requests,request) end
+    end
 end
 
 --Handler functions
@@ -54,17 +65,18 @@ function server.handleRequest(client,request)
     server.requestChangeObj(request.id,game.getClientData(objects[request.id]))
   end
 end
+
 function server.handleConnect(client)
-  --Add client
-  local clientID = #clients+1 --Defaults to expanding the list
-  for i=1,#clients do --Search for removed (trash) objects to overwrite
-    if clients[i].trash then
-      clientID = i
-      break
+    --Add client
+    local clientID = #clients+1 --Defaults to expanding the list
+    for i=1,#clients do --Search for removed (trash) objects to overwrite
+        if clients[i].trash then
+            clientID = i
+            break
+        end
     end
-  end
-  clientRequests[clientID] = {}
-  clients[clientID] = client
+    clientRequests[clientID] = {}
+    clients[clientID] = client
 
   print("Server: Sending",#objects,'objects to the new guy')
   for i=1,#objects do server.requestAddObj(utils.copy(game.getClientData(objects[i])),clientID,true) end   --Send all current objects to new client
@@ -73,6 +85,7 @@ function server.handleConnect(client)
   print("Server: Telling the new guy where his body is: ",player.id)
   server.request({playerID=player.id},'acceptEntry',clientID) --Send the client their player's id
 end
+
 function server.handleDisconnect(client)
   --todo: remove from clients list
 end
@@ -83,11 +96,12 @@ function server.addObject(serverObj,clientObj)
   server.requestAddObj(clientObj)
   return serverObj
 end
+
 function server.removeObject(id)
-  if objects[id] then
-    objMan.removeObject(id)
-    server.request({id=id},'removeObj')
-  end
+    if objects[id] then
+        objMan.removeObject(id)
+        server.request({id=id},'removeObj')
+    end
 end
 --Specific request functions
 function server.requestAddObj(object,clientID,append) --sends to all if client == nil; append forces the reciever to append the object to their list

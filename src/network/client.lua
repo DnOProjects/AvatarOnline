@@ -13,6 +13,7 @@ local function broadcast() --sends all accumulated requests
 end
 
 function client.connect(address) server = client.host:connect(address) end
+
 function client.update(dt) --Called before main game updates
   requests = {} --clear requests
   objMan.bind(objects)
@@ -22,16 +23,19 @@ function client.update(dt) --Called before main game updates
     graphics.update(dt,objects)
     input.update(dt)
     objMan.clearTrash()
-    if server then debug.logClient(server,objects,client) end
+    debug.logClient(server,objects,client)
     broadcast()
   end
   objMan.unbind()
 end
+
 function client.draw() graphics.draw(objects) end
+
 function client.request(request,requestType)
-  if requestType then request.type = requestType end
-  table.insert(requests,request)
+    if requestType then request.type = requestType end
+    table.insert(requests,request)
 end
+
 function client.handleRequest(from,request) --requests are recieved from the server and each have a type
   --local variables populated for convenience
   local object

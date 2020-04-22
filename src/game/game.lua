@@ -20,6 +20,7 @@ function game.update(dt,objects)
                         server.removeObject(i)
                     end
                 end
+                player.updateGame(i, obj, objects) --added in merge
             elseif obj.pos.x > 1920 or obj.pos.x<0 or obj.pos.y > 1080 or obj.pos.y<0 then server.removeObject(i) end
         end
     end

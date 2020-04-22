@@ -12,6 +12,7 @@ graphics = require 'src/graphics/graphics'
 scale = require 'src/graphics/scale'
 ui = require 'src/graphics/ui'
 game = require 'src/game/game'
+player = require 'src/game/player'
 
 local host = false --True: runs a server and a client; False: runs just a client
 local ip = 'localhost'
