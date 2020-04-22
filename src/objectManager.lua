@@ -4,12 +4,14 @@ local objects = "unbound"
 
 function objMan.bind(objectContainer) objects = objectContainer end --sets objects to refer to a table
 function objMan.unbind() objects =  "unbound" end --clears reference for safety
-function objMan.addObject(object)
+function objMan.addObject(object,append) --append is an optional arguement, preventing the overwriting of trash objects
   object.id = #objects+1 --Defaults to expanding the list
-  for i=1,#objects do --Search for removed (trash) objects to overwrite
-    if objects[i].trash then
-      object.id = i
-      break
+  if not append then
+    for i=1,#objects do --Search for removed (trash) objects to overwrite
+      if objects[i].trash then
+        object.id = i
+        break
+      end
     end
   end
   objects[object.id] = object

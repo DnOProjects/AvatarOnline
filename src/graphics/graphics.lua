@@ -9,11 +9,14 @@ function graphics.draw(objects)
 
   for i,obj in ipairs(objects) do
     if not obj.trash then
-      local pos = obj.pos
+      local pos
+      --Find pos
+      if obj.pos then pos = obj.pos end
       if obj.path then pos = obj.path.start + obj.path.vel*obj.path.time end
-      if obj.bullet then
+
+      if obj.img=='bullet' then
         love.graphics.draw(assets.get('image','water'),pos.x,pos.y,0,1/6,1/6,60,60)
-      elseif obj.player then
+      elseif obj.img=='player' then
         local char = 'katara'
         if i~=client.playerID then char = 'iroh' end
         love.graphics.draw(assets.get('image',char),pos.x,pos.y,0,1,1,60,60)

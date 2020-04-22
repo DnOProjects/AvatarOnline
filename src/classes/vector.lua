@@ -23,11 +23,12 @@ function VecPol(mag,dir) return Vec(math.cos(dir),math.sin(dir))*mag end
 function ConstructVec(args) return Vec(args.x,args.y) end
 Cardinals = {Vec(0,1),Vec(1,0),Vec(-1,0),Vec(0,-1)}
 
-function Vector:print() print('x: '..self.x..', y: '..self.y) end
+function Vector:print() print(self:getText()) end
 function Vector:floor() return Vec(math.floor(self.x),math.floor(self.y)) end
 function Vector:abs() return Vec(math.abs(self.x),math.abs(self.y)) end
 function Vector:getMag() return math.sqrt(self.x^2+self.y^2) end
 function Vector:setMag(x) return (self/self:getMag())*x end
 function Vector:getDir() return math.atan2(self.y,self.x) end
 function Vector:setDir(x) return VecPol(self:getMag(),x) end
+function Vector:getText() return 'x: '..self.x..', y: '..self.y end
 function Vector:rotate(x) return self:setDir(self:getDir()+x) end

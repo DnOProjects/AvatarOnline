@@ -25,6 +25,14 @@ function debugger.logClient(server,objects,client)
   i=i+0.5
   local ping = server:round_trip_time()
   logVal('  #objects',#objects)
+  logVal('  playerID',client.playerID)
+  logVal('  player')
+  for k,v in pairs(client.player) do
+    local text
+    if type(v)=="table" and v.getText then text = v:getText()
+    else text = tostring(v) end
+    logVal('    '..tostring(k),text)
+  end
   logVal('  ping',tostring(ping)..' ms',grade(ping,20,80))
 end
 function debugger.draw()

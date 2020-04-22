@@ -11,13 +11,6 @@ local function broadcast() --send all accumulated requests
     if #requests>0 then clients[i]:send(bitser.dumps(requests)) end
   end
 end
-local function requestAddObj(object,clientID) --requests all if client == nil
-  if not object.data.internal then --don't transfer the object if not used by client
-    local copy = utils.copy(object)
-    copy.data = nil --nullify object data to avoid sending unnessesary details
-    server.request({object=copy},"addObj",clientID)
-  end
-end
 
 function server.start(address)
   server.host = enet.host_create(address)
@@ -28,9 +21,9 @@ function server.update(dt) --Called before main game updates
   for i=1,#clientRequests do clientRequests[i] = {} end --clear requests
   net.getEvents(server) --get events triggered by clients and call the appropriate handler method
   game.update(dt,objects) --process game logic and send requests based from resultant state changes
-  objMan.clearTrash()
   broadcast()
   debug.logServer(objects,server)
+  objMan.clearTrash()
   objMan.unbind()
 end
 function server.draw()
@@ -50,14 +43,15 @@ end
 
 --Handler functions
 function server.handleRequest(client,request)
-  if request.type=='createObj' then game.createObject(request.objectType,request)
+  if request.type=='useAbility' then game.useAbility(request.name,request,objects)
   elseif request.type=='movePlayer' then
     local newPos = objects[request.id].pos+request.vec
     if newPos.x<0 then newPos.x=0 end
     if newPos.x>1920 then newPos.x=1920 end
     if newPos.y<0 then newPos.y=0 end
     if newPos.y>1080 then newPos.y=1080 end
-    server.moveObject(request.id,newPos)
+    objects[request.id].pos = newPos
+    server.requestChangeObj(request.id,game.getClientData(objects[request.id]))
   end
 end
 function server.handleConnect(client)
@@ -72,19 +66,22 @@ function server.handleConnect(client)
   clientRequests[clientID] = {}
   clients[clientID] = client
 
-  for i=1,#objects do requestAddObj(objects[i],clientID) end   --Send all current objects to new client
+  print("Server: Sending",#objects,'objects to the new guy')
+  for i=1,#objects do server.requestAddObj(utils.copy(game.getClientData(objects[i])),clientID,true) end   --Send all current objects to new client
+  print("Server: Making the new guy a body")
   local player = game.createObject('player',{clientID=clientID}) --Add new player object
-  server.request({id=player.id},'setPlayerID',clientID) --Send the client their player's id
+  print("Server: Telling the new guy where his body is: ",player.id)
+  server.request({playerID=player.id},'acceptEntry',clientID) --Send the client their player's id
 end
 function server.handleDisconnect(client)
   --todo: remove from clients list
 end
 
---Functions to change internal game state and possibly update the draw state of clients
-function server.addObject(object)
-  objMan.addObject(object)
-  requestAddObj(object)
-  return object
+--Object management functions must mirror actions across all clients
+function server.addObject(serverObj,clientObj)
+  objMan.addObject(serverObj)
+  server.requestAddObj(clientObj)
+  return serverObj
 end
 function server.removeObject(id)
   if objects[id] then
@@ -92,11 +89,10 @@ function server.removeObject(id)
     server.request({id=id},'removeObj')
   end
 end
-function server.moveObject(id,pos)
-  if objects[id] and objects[id].pos~=pos then
-    objects[id].pos = pos
-    server.request({pos=pos,id=id},'moveObj')
-  end
+--Specific request functions
+function server.requestAddObj(object,clientID,append) --sends to all if client == nil; append forces the reciever to append the object to their list
+  server.request({object=object,append=append},"addObj",clientID)
 end
+function server.requestChangeObj(id,data) server.request({id=id,data=data},'changeObj') end
 
 return server

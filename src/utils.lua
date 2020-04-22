@@ -7,6 +7,17 @@ function utils.inBounds(point, rect)
     return false
 end
 
+function utils.print(x,title,indent)
+  local indent,title = indent or '',title or 'Variable'
+  if type(x)=="table" then
+    if x.getText then print(indent..title..': '..x:getText())
+    else
+      print(indent..title..': ')
+      for k,v in pairs(x) do utils.print(v,k,indent..'  ') end
+    end
+  else print(indent..title..': '..tostring(x)) end
+end
+
 function utils.round(num, numDecimalPlaces)
     local mult = 10^(numDecimalPlaces or 0)
     return math.floor(num * mult + 0.5) / mult
