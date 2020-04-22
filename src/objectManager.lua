@@ -1,23 +1,21 @@
 local objMan = {}
 
-local objects = "unbound"
-
-function objMan.bind(objectContainer) objects = objectContainer end --sets objects to refer to a table
-function objMan.unbind() objects =  "unbound" end --clears reference for safety
-function objMan.addObject(object)
-  object.id = #objects+1 --Defaults to expanding the list
-  for i=1,#objects do --Search for removed (trash) objects to overwrite
-    if objects[i].trash then
-      object.id = i
-      break
+function objMan.addObject(object,append) --append is an optional arguement, preventing the overwriting of trash objects
+  object.id = #Objects+1 --Defaults to expanding the list
+  if not append then
+    for i=1,#Objects do --Search for removed (trash) objects to overwrite
+      if Objects[i].trash then
+        object.id = i
+        break
+      end
     end
   end
-  objects[object.id] = object
+  Objects[object.id] = object
 end
-function objMan.removeObject(id) objects[id].trash = true end
+function objMan.removeObject(id) Objects[id].trash = true end
 function objMan.clearTrash()
-for i=#objects,1,-1 do
-    if objects[i].trash then table.remove(objects,i)
+for i=#Objects,1,-1 do
+    if Objects[i].trash then table.remove(Objects,i)
     else break end
   end
 end

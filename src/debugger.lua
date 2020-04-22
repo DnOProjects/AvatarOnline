@@ -16,15 +16,23 @@ function debugger.update(dt)  --clear log before frame starts
   local fps = love.timer.getFPS()
   logVal('  FPS',fps,grade(fps,60,20))
 end
-function debugger.logServer(objects,server)
+function debugger.logServer(server)
   logVal('Server')
-  logVal('  #objects',#objects)
+  logVal('  #Objects',#Objects)
 end
-function debugger.logClient(server,objects,client)
+function debugger.logClient(server,client)
   logVal('Client')
   i=i+0.5
   local ping = server:round_trip_time()
-  logVal('  #objects',#objects)
+  logVal('  #Objects',#Objects)
+  logVal('  playerID',client.playerID)
+  logVal('  player')
+  for k,v in pairs(client.player) do
+    local text
+    if type(v)=="table" and v.getText then text = v:getText()
+    else text = tostring(v) end
+    logVal('    '..tostring(k),text)
+  end
   logVal('  ping',tostring(ping)..' ms',grade(ping,20,80))
 end
 function debugger.draw()

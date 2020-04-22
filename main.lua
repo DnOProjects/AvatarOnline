@@ -11,12 +11,15 @@ client, server, bitser, net = require 'src/network/client', require 'src/network
 graphics = require 'src/graphics/graphics'
 scale = require 'src/graphics/scale'
 ui = require 'src/graphics/ui'
+Object, Player = require 'src/game/object', require 'src/game/player'
 game = require 'src/game/game'
+--Global variables
+Objects = 'unbound' --a reference to the active node's objects list
 
-local host = true --True: runs a server and a client; False: runs just a client
+local host = false --True: runs a server and a client; False: runs just a client
 local ip = 'localhost'
-if (host == false) then
-	ip = '92.62.10.253'
+if not host then
+	ip = 'localhost'--'92.62.10.253'
 end
 local port = '25565'
 
@@ -42,10 +45,8 @@ function love.draw()
 	scale.draw()
 
 	ui.drawBackgrounds()
-	if currentPage =="inGame" then
-		client.draw() --Draws the game from the client's incomplete store of game objects
-	end
-	if host then server.draw() end --for debug ONLY
+	if currentPage =="inGame" then client.draw() end
+--	if host then server.draw() end --for debug ONLY
   debug.draw()
   ui.draw()
 

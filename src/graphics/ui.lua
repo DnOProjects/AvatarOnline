@@ -20,7 +20,7 @@ end
 
 function initUI()
 	addBackgroundImage({1, 2}, assets.get("image", "dirt"))
-	addPrint({1, 2}, "Avatar Online", 0, 50, 1920, 150, 0, 0.1, 0.15, 1, "center")
+	addPrint({1, 2}, "Elements Online", 0, 50, 1920, 150, 0, 0.1, 0.15, 1, "center")
 
 	addButton(1, "inGame", "Play", 200, 250, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
 	addButton(1, 2, "Options", 200, 450, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
