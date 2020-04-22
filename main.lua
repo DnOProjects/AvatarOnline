@@ -33,11 +33,8 @@ end
 function love.update(dt)
 	scale.update()
 	debug.update(dt)
-	if currentPage =="inGame" then
-		if host then server.update(dt) end --Gets clients' requests, runs the game, sends instructions to clients
-		client.update(dt) --Gets server's instructions, sends requests to server
-	end
-	ui.update()
+	if host then server.update(dt) end --Gets clients' requests, runs the game, sends instructions to clients
+	client.update(dt) --Gets server's instructions, sends requests to server
 end
 
 function love.draw()

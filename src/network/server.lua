@@ -43,7 +43,10 @@ end
 
 --Handler functions
 function server.handleRequest(client,request)
-  local player = Objects[request.id]
+  local player
+  if request.id then player = Objects[request.id] end
+
+  if request.type == 'respawn' then player:respawn() end
   if request.type=='useAbility' then player:useAbility(request.name,request)
   elseif request.type=='movePlayer' then player:move(request) end
 end

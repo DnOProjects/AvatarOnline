@@ -17,6 +17,7 @@ function client.update(dt) --Called before main game updates
   requests = {} --clear requests
   Objects = objects
   net.getEvents(client)
+  ui.update()
   if client.connected then
     client.player = objects[client.playerID] --update player
     graphics.update(dt)

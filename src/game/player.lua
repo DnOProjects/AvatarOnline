@@ -28,5 +28,9 @@ function Player:die()
   server.request({},'youDied',self.clientID)
   server.updateClientData(self)
 end
+function Player:respawn()
+  self.dead = false
+  server.updateClientData(self)
+end
 
 return Player

@@ -29,7 +29,7 @@ function initUI()
 	addSlider(2, "Master", 200, 250, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, volume, 6, 11)
 	addButton(2, 1, "Back", 200, 650, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
 
-	addButton("deathScreen", "inGame", "Respawn", 710, 470, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
+	addButton("deathScreen", "respawn", "Respawn", 710, 470, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
 end
 
 function addBackgroundImage(pages, image)
@@ -69,6 +69,9 @@ function updateButtons()
 			if (button.mouseOver and love.mouse.isDown(1) and canClick == true) then
 				if button.pageToGo == "exit" then
 					love.event.quit()
+				elseif button.pageToGo == "respawn" then
+					client.request({id=client.playerID},'respawn')
+					currentPage = 'inGame'
 				else
 					currentPage = button.pageToGo
 				end
