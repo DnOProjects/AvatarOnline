@@ -1,6 +1,6 @@
 local game = {}
 
-local Bullet = Object:new('bullet',{bullet=true,vel=Vec(),ownerID=nil,getDrawData=function(self)
+local Bullet = Object:new('bullet',{bullet=true,hitR=12,vel=Vec(),ownerID=nil,getDrawData=function(self)
   return {path={start=self.pos,vel=self.vel,time=0},img='water'}
 end})
 
@@ -10,7 +10,7 @@ function game.update(dt)
             if obj.vel then obj.pos = obj.pos+obj.vel*dt end --apply velocity
             if obj.player then
                 for j, objB in ipairs(Objects) do
-                    if objB.bullet and objB.ownerID~=obj.id and objB.pos..obj.pos < 12 then obj:die() end
+                    if objB.bullet and objB.ownerID~=obj.id and objB.pos..obj.pos < (obj.hitR+objB.hitR) then obj:damage(5) end
                 end
             elseif obj.pos.x > 1920 or obj.pos.x<0 or obj.pos.y > 1080 or obj.pos.y<0 then server.removeObject(i) end
         end
@@ -23,6 +23,7 @@ function game.createObject(objectType,request)
     if objectType == 'bullet' then object = Bullet:obj({vel=request.vel,ownerID=request.ownerID}) end
     object.pos = request.pos or Vec()
     server.addObject(object)
+    object:onCreate()
     return object
 end
 

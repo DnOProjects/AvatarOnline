@@ -2,21 +2,31 @@ local client = {
   nodeType='Client',
   host=enet.host_create(), --unbound (meaning it cannot be connect to) host object (self)
   player = nil, --is updated to refer to the client's player
+  requestedConnection = false,
   connected = false,
-  playerID = nil --unique id of the client's player game object
+  playerID = nil, --unique id of the client's player game object
+  globals = {hp=0}
 }
 local server --bound peer object that it is connected to
 local objects = {} --client-side objects list to draw graphics, interpret inputs and provide instant feedback with
 local requests = {}
+local healthBar = hud.add({type='meter',size=Vec(800,100),pos=Vec(0,1100),col=Col(1,0,0)})
 local function broadcast() --sends all accumulated requests
   if #requests>0 then server:send(bitser.dumps(requests)) end
 end
 
-function client.connect(address) server = client.host:connect(address) end
+function client.load()
+  scale.load()
+  ui.load()
+end
+function client.connect(address)
+  client.requestedConnection = true
+  server = client.host:connect(address)
+end
 function client.update(dt) --Called before main game updates
   requests = {} --clear requests
   Objects = objects
-  net.getEvents(client)
+  if client.requestedConnection then net.getEvents(client) end
   ui.update()
   if client.connected then
     client.player = objects[client.playerID] --update player
@@ -29,9 +39,13 @@ function client.update(dt) --Called before main game updates
   Objects = 'unbound'
 end
 function client.draw()
-  Objects = objects
-  graphics.draw()
-  Objects = 'unbound'
+  if client.connected and currentPage=='inGame' then
+    Objects = objects
+    graphics.draw()
+    hud.draw()
+    Objects = 'unbound'
+  end
+  ui.draw()
 end
 function client.request(request,requestType)
   if requestType then request.type = requestType end
@@ -54,6 +68,10 @@ function client.handleRequest(from,request) --requests are recieved from the ser
   if request.type=='changeObj' then
     objects[request.id] = request.data
     objects[request.id].id = request.id --restore lost id
+  end
+  if request.type=='setGlobal' then
+    client.globals[request.k] = request.v
+    if request.k == 'hp' then healthBar.p = client.globals.hp / 100 end
   end
 end
 

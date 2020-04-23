@@ -17,6 +17,7 @@ function Vec(x,y)
 	return Vector:obj({x=x,y=y})
 end
 function VecMouse() return Vec(love.mouse.getX(),love.mouse.getY()) end
+function VecSquare(x) return Vec(x,x) end
 function VecSize(object) return Vec(object:getWidth(),object:getHeight()) end
 function VecWin() return VecSize(love.graphics) end
 function VecPol(mag,dir) return Vec(math.cos(dir),math.sin(dir))*mag end

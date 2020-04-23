@@ -22,7 +22,11 @@ function initUI()
 	addBackgroundImage({1, 2}, assets.get("image", "dirt"))
 	addPrint({1, 2}, "Elements Online", 0, 50, 1920, 150, 0, 0.1, 0.15, 1, "center")
 
-	addButton(1, "inGame", "Play", 200, 250, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
+	addButton(1, "inGame", "Play", 200, 250, 500, 140, 70, 0.1, 0.1, 0.1, 0.6,
+	function()
+		if Hosting then server.start('*:'..Port) end --starts the server once button pushed
+		client.connect(Ip..':'..Port) --connects the client once the button is pushed
+	end)
 	addButton(1, 2, "Options", 200, 450, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
 	addButton(1, "exit", "Exit", 200, 650, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
 
@@ -36,8 +40,8 @@ function addBackgroundImage(pages, image)
 	backgrounds[#backgrounds+1] = {pages = pages, image = image}
 end
 
-function addButton(page, pageToGo, text, x, y, width, height, textSize, r, g, b, a)
-	buttons[#buttons+1] = {page = page, pageToGo = pageToGo, text = text, x = x, y = y, width = width, height = height, textSize = textSize, font = "IMMORTAL", color = {r, g, b, a}, mouseOver = false}
+function addButton(page, pageToGo, text, x, y, width, height, textSize, r, g, b, a, onPress) --on press is an optional arguement
+	buttons[#buttons+1] = {page = page, pageToGo = pageToGo, text = text, x = x, y = y, width = width, height = height, textSize = textSize, font = "IMMORTAL", color = {r, g, b, a}, mouseOver = false, onPress = onPress or function() end}
 end
 
 function addSlider(page, text, x, y, width, height, textSize, r, g, b, a, value, sliderWidth, sliderHeight)
@@ -75,6 +79,7 @@ function updateButtons()
 				else
 					currentPage = button.pageToGo
 				end
+				button.onPress()
 				canSlide = false
 			end
 		end

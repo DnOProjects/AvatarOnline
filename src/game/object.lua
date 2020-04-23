@@ -1,6 +1,13 @@
-local Object = Class:new({pos=Vec()})
+local Object = Class:new({
+  pos=Vec(),
+  hitR=0 --radius in px. when drawn without any scaling for the hitcircle (hitbox but circular)
+})
 
-function Object:getDrawData() return {} end --blank function to be overridden
+--blank functions to be overridden
+function Object:getDrawData() return {} end
+  function Object:onCreate() end
+
+
 function Object:getClientData()
   local data = self:getDrawData()
   data.trash = self.trash --include trash

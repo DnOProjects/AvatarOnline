@@ -1,6 +1,7 @@
 local server = {
   nodeType='Server',
   host=nil, --host object (self) bound to an address
+  running=false
 }
 local clients = {} --to store the clients when they connect
 local clientRequests = {} --to store accumulated requests for each client
@@ -13,18 +14,21 @@ local function broadcast() --send all accumulated requests
 end
 
 function server.start(address)
+  server.running = true
   server.host = enet.host_create(address)
   if server.host then print('Server: started at '..address) end
 end
 function server.update(dt) --Called before main game updates
-  Objects = objects
-  for i=1,#clientRequests do clientRequests[i] = {} end --clear requests
-  net.getEvents(server) --get events triggered by clients and call the appropriate handler method
-  game.update(dt) --process game logic and send requests based from resultant state changes
-  broadcast()
-  debug.logServer(server)
-  objMan.clearTrash()
-  Objects = 'unbound'
+  if Hosting and server.running then
+    Objects = objects
+    for i=1,#clientRequests do clientRequests[i] = {} end --clear requests
+    net.getEvents(server) --get events triggered by clients and call the appropriate handler method
+    game.update(dt) --process game logic and send requests based from resultant state changes
+    broadcast()
+    debug.logServer(server)
+    objMan.clearTrash()
+    Objects = 'unbound'
+  end
 end
 function server.draw()
   Col(1,1,1,0.4):use()
@@ -89,6 +93,7 @@ end
 function server.requestAddObj(object,clientID,append) --sends to all if client == nil; append forces the reciever to append the object to their list
   server.request({object=object,append=append},"addObj",clientID)
 end
+function server.requestSetGlobal(k,v,clientID) server.request({k=k,v=v},'setGlobal',clientID) end
 function server.updateClientData(object) server.request({id=object.id,data=object:getClientData()},'changeObj') end
 
 return server
