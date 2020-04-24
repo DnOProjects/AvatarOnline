@@ -10,11 +10,18 @@ function Col(r,g,b,a)
 end
 Colors = {white=Col(1,1,1),black=Col(0,0,0)}
 function ConstructCol(args) return Col(args.r,args.g,args.b,args.a) end
-function ColMix(a,b,p) -- x: 1=fully a, 0=fullyb, 0.5=50:50 mix
-	return Col(b.r+(a.r-b.r)*p,b.g+(a.g-b.g)*p,b.b+(a.b-b.b)*p,b.a+(a.a-b.a)*p)
-end
 
 function Color:list() return {self.r,self.g,self.b,self.a} end
 function Color:use() love.graphics.setColor(self.r,self.g,self.b,self.a) end
 function Color:setBackground() love.graphics.setBackgroundColor(self.r,self.g,self.b,self.a) end
 function Color:equals(col) return self.r==col.r and self.g==col.g and self.b==col.b and self.a==col.a end
+
+--Modifiers
+function Color:setR(r) return Col(r,self.g,self.b,a) end
+function Color:setG(g) return Col(self.r,g,self.b,a) end
+function Color:setB(b) return Col(self.r,self.g,b,a) end
+function Color:setA(a) return Col(self.r,self.g,self.b,a) end
+function Color:setBrightness(x) return Col(self.r*x,self.g*x,self.b*x,self.a) end
+function Color.mix(a,b,r)
+	return Col(b.r+(a.r-b.r)*r,b.g+(a.g-b.g)*r,b.b+(a.b-b.b)*r,b.a+(a.a-b.a)*r)
+end

@@ -2,19 +2,19 @@ local hud = {}
 
 local elements = {}
 local elementTypes = {
-  meter = Class:new('hudMeter',{p=0,col=Col(1,1,1),pos=Vec(),roundedness=1,border=0.1,size=Vec(100,30),
+  meter = Class:new('hudMeter',{p=0,col=Col(1,1,1),pos=Vec(),roundedness=1,border=0.1,size=Vec(100,30),alpha=1,
   draw=function(self)
     --Outline
     local r = self.roundedness * self.size.y * 0.4
-    Col():use()
+    Col(0,0,0,self.alpha):use()
     love.graphics.rectangle('fill',self.pos.x,self.pos.y,self.size.x,self.size.y,r,r,100)
     --Internal bar
     local b = self.size.y*self.border
     local r = self.roundedness * (self.size.y-2*b) * 0.4
-    Col(0.2,0.2,0.2):use()
+    Col(0.2,0.2,0.2,self.alpha):use()
     love.graphics.rectangle('fill',self.pos.x+b,self.pos.y+b,self.size.x-2*b,self.size.y-2*b,r,r,100)
     if self.p~=0 then
-      self.col:use()
+      self.col:setA(self.alpha):use()
       love.graphics.rectangle('fill',self.pos.x+b,self.pos.y+b,(self.size.x-2*b)*self.p,self.size.y-2*b,r,r,100)
     end
     Col(1,1,1):use()

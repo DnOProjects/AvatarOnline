@@ -20,6 +20,7 @@ function Player:useAbility(name,request)
     if name=='waterSpray' then
       for i=-5,5 do game.createObject('bullet',{vel=request.dir:rotate(i/10)*200,pos=self.pos,ownerID=request.id}) end
     end
+    if name=='bubble' then game.createObject('bullet',{vel=request.dir*200,pos=self.pos,ownerID=request.id}) end
   end
 end
 

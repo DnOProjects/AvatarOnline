@@ -1,18 +1,19 @@
 local game = {}
 
-local Bullet = Object:new('bullet',{bullet=true,hitR=12,vel=Vec(),ownerID=nil,getDrawData=function(self)
+local Bullet = Object:new('bullet',{bullet=true,hitR=12,vel=Vec(),ownerID=nil,
+onTouches=function(self,object)
+  if object.player and self.ownerID~=object.id then object:damage(5) end
+end,
+getDrawData=function(self)
   return {path={start=self.pos,vel=self.vel,time=0},img='water'}
 end})
 
 function game.update(dt)
-    for i, obj in ipairs(Objects) do
-        if (not obj.trash) and (not obj.dead) then
-            if obj.vel then obj.pos = obj.pos+obj.vel*dt end --apply velocity
-            if obj.player then
-                for j, objB in ipairs(Objects) do
-                    if objB.bullet and objB.ownerID~=obj.id and objB.pos..obj.pos < (obj.hitR+objB.hitR) then obj:damage(5) end
-                end
-            elseif obj.pos.x > 1920 or obj.pos.x<0 or obj.pos.y > 1080 or obj.pos.y<0 then server.removeObject(i) end
+    for i, object in ipairs(Objects) do
+      if object.pos.x > 1920 or object.pos.x<0 or object.pos.y > 1080 or object.pos.y<0 then server.removeObject(i) end
+        if (not object.trash) and (not object.dead) then
+            object:updateTouches()
+            if object.vel then object.pos = object.pos+object.vel*dt end --apply velocity
         end
     end
 end

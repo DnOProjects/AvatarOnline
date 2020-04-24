@@ -6,7 +6,7 @@ local function grade(value,best,worst) --args given are bounds from best to wors
   if best>worst then low,high = worst,best end
   local grade = (value-low)/(high-low)--from 0 to 1
   if best<worst then grade = 1-grade end--lower the better
-  return ColMix(Col(0,1,0),Col(1,0,0),grade)
+  return Col(0,1,0):mix(Col(1,0,0),grade)
 end
 local function logVal(name,value,color) table.insert(log,{text=name..": "..tostring(value or ''),color=color or Colors.white})  end
 local i=0

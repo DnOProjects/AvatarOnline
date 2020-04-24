@@ -13,15 +13,15 @@ Object, Player = require 'src/game/object', require 'src/game/player'
 game = require 'src/game/game'
 --Global variables
 Objects = 'unbound' --a reference to the active node's objects list
-Hosting = false --True: runs a server and a client; False: runs just a client
+Hosting = true --True: runs a server and a client; False: runs just a client
 Ip = 'localhost'
 if not Hosting then
-	Ip = '92.62.10.253'
+	Ip = 'localhost'--'92.62.10.253'
 end
 Port = '25565'
 
 function love.load()
-	--love.window.setFullscreen(true)
+	love.window.setFullscreen(true)
 	client.load()
 end
 

@@ -10,7 +10,9 @@ local client = {
 local server --bound peer object that it is connected to
 local objects = {} --client-side objects list to draw graphics, interpret inputs and provide instant feedback with
 local requests = {}
-local healthBar = hud.add({type='meter',size=Vec(800,100),pos=Vec(0,1100),col=Col(1,0,0)})
+local healthBar = hud.add({type='meter',size=Vec(600,50),pos=Vec(0,1030),col=Col(1,0,0),alpha=1/2})
+local chiBar = hud.add({type='meter',size=Vec(400,50),pos=Vec(0,985),col=Col(0.2,0.64,0.95),p=1,alpha=1/2})
+
 local function broadcast() --sends all accumulated requests
   if #requests>0 then server:send(bitser.dumps(requests)) end
 end
