@@ -4,36 +4,49 @@ local ui = {}
 utils = require "src/utils"
 assets = require "src/assets"
 
+local IGPages = {}
+local backgrounds = {}
+local buttons = {}
+local sliders = {}
+local prints = {}
+
+local canClick = true
+local canSlide = true
+
 -- Loads
 function ui.load()
 	volume = 100
 
 	currentPage = 1
-	backgrounds = {}
-	buttons = {}
-	sliders = {}
-	prints = {}
 	initUI()
-	canClick = true
-	canSlide = true
 end
 
 function initUI()
 	addBackgroundImage({1, 2}, assets.get("image", "dirt"))
 	addPrint({1, 2}, "Elements Online", 0, 50, 1920, 150, 0, 0.1, 0.15, 1, "center")
 
-	addButton(1, "inGame", "Play", 200, 250, 500, 140, 70, 0.1, 0.1, 0.1, 0.6,
-	function()
-		if Hosting then server.start('*:'..Port) end --starts the server once button pushed
-		client.connect(Ip..':'..Port) --connects the client once the button is pushed
+	addButton(1, "inGame", "Play", 200, 250, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, function()
+		if Hosting then
+			server.start('*:'..Port) -- Starts the server once button pushed
+		end
+		client.connect(Ip..':'..Port) -- Connects the client once the button is pushed
 	end)
 	addButton(1, 2, "Options", 200, 450, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
-	addButton(1, "exit", "Exit", 200, 650, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
+	addButton(1, "exit", "Exit", 200, 650, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, function()
+		love.event.quit()
+	end)
 
 	addSlider(2, "Master", 200, 250, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, volume, 6, 11)
 	addButton(2, 1, "Back", 200, 650, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
 
-	addButton("deathScreen", "respawn", "Respawn", 710, 470, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
+	addButton("deathScreen", "respawn", "Respawn", 710, 470, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, function()
+		client.request({id=client.playerID},'respawn')
+	end)
+end
+
+function addIGPage(page, key)
+	key = key or "noKey"
+	IGPages[#IGPages+1] = {page = page, key = key}
 end
 
 function addBackgroundImage(pages, image)
@@ -71,14 +84,7 @@ function updateButtons()
 		if (button.page == currentPage) then
 			button.mouseOver = utils.inBounds({mouseX, mouseY}, {button.x, button.y, button.width, button.height})
 			if (button.mouseOver and love.mouse.isDown(1) and canClick == true) then
-				if button.pageToGo == "exit" then
-					love.event.quit()
-				elseif button.pageToGo == "respawn" then
-					client.request({id=client.playerID},'respawn')
-					currentPage = 'inGame'
-				else
-					currentPage = button.pageToGo
-				end
+				currentPage = button.pageToGo
 				button.onPress()
 				canSlide = false
 			end

@@ -25,7 +25,7 @@ function server.update(dt) --Called before main game updates
     net.getEvents(server) --get events triggered by clients and call the appropriate handler method
     game.update(dt) --process game logic and send requests based from resultant state changes
     broadcast()
-    debug.logServer(server)
+    debugger.logServer(server)
     objMan.clearTrash()
     Objects = 'unbound'
   end

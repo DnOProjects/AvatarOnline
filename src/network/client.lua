@@ -33,7 +33,7 @@ function client.update(dt) --Called before main game updates
     graphics.update(dt)
     input.update(dt)
     objMan.clearTrash()
-    if server then debug.logClient(server,client) end
+    if server then debugger.logClient(server,client) end
     broadcast()
   end
   Objects = 'unbound'
