@@ -21,6 +21,7 @@ end
 Port = '25565'
 
 function love.load()
+	love.window.setFullscreen(true)
 	client.load()
 end
 
