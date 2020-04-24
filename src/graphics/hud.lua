@@ -13,8 +13,10 @@ local elementTypes = {
     local r = self.roundedness * (self.size.y-2*b) * 0.4
     Col(0.2,0.2,0.2):use()
     love.graphics.rectangle('fill',self.pos.x+b,self.pos.y+b,self.size.x-2*b,self.size.y-2*b,r,r,100)
-    self.col:use()
-    love.graphics.rectangle('fill',self.pos.x+b,self.pos.y+b,(self.size.x-2*b)*self.p,self.size.y-2*b,r,r,100)
+    if self.p~=0 then
+      self.col:use()
+      love.graphics.rectangle('fill',self.pos.x+b,self.pos.y+b,(self.size.x-2*b)*self.p,self.size.y-2*b,r,r,100)
+    end
     Col(1,1,1):use()
   end})
 }
