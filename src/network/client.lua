@@ -39,7 +39,7 @@ function client.update(dt) --Called before main game updates
   Objects = 'unbound'
 end
 function client.draw()
-  if client.connected and currentPage=='inGame' then
+  if client.connected and utils.inList(currentPage, ui.getIGPages()) then
     Objects = objects
     graphics.draw()
     hud.draw()

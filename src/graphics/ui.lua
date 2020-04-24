@@ -1,8 +1,8 @@
 local ui = {}
 
 -- Requires
-utils = require "src/utils"
-assets = require "src/assets"
+local utils = require "src/utils"
+local assets = require "src/assets"
 
 local IGPages = {}
 local backgrounds = {}
@@ -14,14 +14,33 @@ local canClick = true
 local canSlide = true
 
 -- Loads
-function ui.load()
-	volume = 100
-
-	currentPage = 1
-	initUI()
+local function addIGPage(page, key)
+	key = key or "noKey"
+	IGPages[#IGPages+1] = {page = page, key = key}
 end
 
-function initUI()
+local function addBackgroundImage(pages, image)
+	backgrounds[#backgrounds+1] = {pages = pages, image = image}
+end
+
+local function addButton(page, pageToGo, text, x, y, width, height, textSize, r, g, b, a, onPress) --on press is an optional arguement
+	buttons[#buttons+1] = {page = page, pageToGo = pageToGo, text = text, x = x, y = y, width = width, height = height, textSize = textSize, font = "IMMORTAL", color = {r, g, b, a}, mouseOver = false, onPress = onPress or function() end}
+end
+
+local function addSlider(page, text, x, y, width, height, textSize, r, g, b, a, value, sliderWidth, sliderHeight)
+	-- sliderWidth must be even as it is halved
+	-- sliderHeight must be odd as the 3 from the slider line is odd
+	sliders[#sliders+1] = {page = page, text = text, x = x, y = y, width = width, height = height, textSize = textSize, font = "IMMORTAL", color = {r, g, b, a}, value = value, sliderWidth = sliderWidth, sliderHeight = sliderHeight}
+end
+
+local function addPrint(pages, text, x, y, limit, textSize, r, g, b, a, align)
+	prints[#prints+1] = {pages = pages, text = text, x = x, y = y, limit = limit, textSize = textSize, font = "TropicalAsian", color = {r, g, b, a}, align = align}
+end
+
+local function initUI()
+	addIGPage("inGame")
+	addIGPage("deathScreen")
+
 	addBackgroundImage({1, 2}, assets.get("image", "dirt"))
 	addPrint({1, 2}, "Elements Online", 0, 50, 1920, 150, 0, 0.1, 0.15, 1, "center")
 
@@ -39,47 +58,20 @@ function initUI()
 	addSlider(2, "Master", 200, 250, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, volume, 6, 11)
 	addButton(2, 1, "Back", 200, 650, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
 
-	addButton("deathScreen", "respawn", "Respawn", 710, 470, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, function()
+	addButton("deathScreen", "inGame", "Respawn", 710, 470, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, function()
 		client.request({id=client.playerID},'respawn')
 	end)
 end
 
-function addIGPage(page, key)
-	key = key or "noKey"
-	IGPages[#IGPages+1] = {page = page, key = key}
-end
+function ui.load()
+	volume = 100
 
-function addBackgroundImage(pages, image)
-	backgrounds[#backgrounds+1] = {pages = pages, image = image}
-end
-
-function addButton(page, pageToGo, text, x, y, width, height, textSize, r, g, b, a, onPress) --on press is an optional arguement
-	buttons[#buttons+1] = {page = page, pageToGo = pageToGo, text = text, x = x, y = y, width = width, height = height, textSize = textSize, font = "IMMORTAL", color = {r, g, b, a}, mouseOver = false, onPress = onPress or function() end}
-end
-
-function addSlider(page, text, x, y, width, height, textSize, r, g, b, a, value, sliderWidth, sliderHeight)
-	-- sliderWidth must be even as it is halved
-	-- sliderHeight must be odd as the 3 from the slider line is odd
-	sliders[#sliders+1] = {page = page, text = text, x = x, y = y, width = width, height = height, textSize = textSize, font = "IMMORTAL", color = {r, g, b, a}, value = value, sliderWidth = sliderWidth, sliderHeight = sliderHeight}
-end
-
-function addPrint(pages, text, x, y, limit, textSize, r, g, b, a, align)
-	prints[#prints+1] = {pages = pages, text = text, x = x, y = y, limit = limit, textSize = textSize, font = "TropicalAsian", color = {r, g, b, a}, align = align}
+	currentPage = 1
+	initUI()
 end
 
 -- Updates
-function ui.update()
-	updateButtons()
-	updateSliders()
-	if love.mouse.isDown(1) == true then
-		canClick = false
-	else
-		canClick = true
-		canSlide = true
-	end
-end
-
-function updateButtons()
+local function updateButtons()
 	for i, button in pairs(buttons) do
 		if (button.page == currentPage) then
 			button.mouseOver = utils.inBounds({mouseX, mouseY}, {button.x, button.y, button.width, button.height})
@@ -92,7 +84,7 @@ function updateButtons()
 	end
 end
 
-function updateSliders()
+local function updateSliders()
 	for i, slider in pairs(sliders) do
 		if (slider.page == currentPage) then
 			if love.mouse.isDown(1) == true then
@@ -111,13 +103,18 @@ function updateSliders()
 	end
 end
 
--- Drawing
-function ui.draw()
-	drawButtons()
-	drawSliders()
-	drawPrints()
+function ui.update()
+	updateButtons()
+	updateSliders()
+	if love.mouse.isDown(1) == true then
+		canClick = false
+	else
+		canClick = true
+		canSlide = true
+	end
 end
 
+-- Drawing
 function ui.drawBackgrounds()
 	for i, background in pairs(backgrounds) do
 		if (utils.inList(currentPage, background.pages)) then
@@ -130,7 +127,7 @@ function ui.drawBackgrounds()
 	end
 end
 
-function drawButtons()
+local function drawButtons()
 	for i, button in pairs(buttons) do
 	    if (button.page == currentPage) then
 			if (button.mouseOver == false) then
@@ -146,7 +143,7 @@ function drawButtons()
 	end
 end
 
-function drawSliders()
+local function drawSliders()
 	for i, slider in pairs(sliders) do
 		if (slider.page == currentPage) then
 		    love.graphics.setColor(slider.color)
@@ -160,7 +157,7 @@ function drawSliders()
 	end
 end
 
-function drawPrints()
+local function drawPrints()
 	for i, printText in pairs(prints) do
 		if (utils.inList(currentPage, printText.pages)) then
 			love.graphics.setFont(assets.get("font", printText.font, printText.textSize))
@@ -169,6 +166,21 @@ function drawPrints()
 			love.graphics.setColor(1, 1, 1)
 		end
 	end
+end
+
+function ui.draw()
+	drawButtons()
+	drawSliders()
+	drawPrints()
+end
+
+-- Other functions
+function ui.getIGPages()
+	local IGOnlyPages = {}
+	for i=1, #IGPages do
+		IGOnlyPages[i] = IGPages[i].page
+	end
+	return IGOnlyPages
 end
 
 return ui
