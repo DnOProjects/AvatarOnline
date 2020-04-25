@@ -209,12 +209,13 @@ local function circle(pos,fillCol,r) --temp
 end
 
 local function drawPiCharts()
-	for i, piChart in pairs(piCharts) do
+	for i, piChart in ipairs(piCharts) do
 		if (currentPage == piChart.page) then
 			local pos = Vec(piChart.x, piChart.y)
 			circle(pos,Col(piChart.color),piChart.radius)
 			if (piChart.segments ~= 0) then
-				for dir=1/12,1,1/piChart.segments do
+				local step = 1/piChart.segments
+				for dir=step,1,step do
 					local p = pos+VecPol(piChart.radius,dir*math.pi*2)
 					love.graphics.line(piChart.x,piChart.y,p.x,p.y)
 				end

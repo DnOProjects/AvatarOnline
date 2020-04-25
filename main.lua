@@ -13,7 +13,7 @@ Object, Player = require 'src/game/object', require 'src/game/player'
 game = require 'src/game/game'
 --Global variables
 Objects = 'unbound' --a reference to the active node's objects list
-Hosting = false --True: runs a server and a client; False: runs just a client
+Hosting = true --True: runs a server and a client; False: runs just a client
 Ip = 'localhost'
 if not Hosting then
 	Ip = 'localhost'--'92.62.10.253'
