@@ -1,10 +1,12 @@
 #define maxLights 100
 
 struct Light {
-    vec2 position;
+    vec2 a;
+    vec2 b;
     vec3 color;
     float intensity; //by how much it affects color values
 		float spread; //how far around it it affects
+    bool isPoint;
 };
 
 extern Light lights[maxLights];
@@ -12,6 +14,19 @@ extern int numLights;
 
 extern vec2 screenSize;
 
+float distToLine(vec2 p, vec2 a, vec2 b) //copied from internet somewhere
+{
+  vec2 n = b - a;
+   vec2 pa = a - p;
+   float c = dot( n, pa );
+   if ( c > 0.0 )
+       return dot( pa, pa );
+   vec2 bp = p - b;
+   if ( dot( n, bp ) > 0.0 )
+       return dot( bp, bp );
+   vec2 e = pa - n * (c / dot( n, n ));
+   return dot( e, e );
+}
 
 vec4 effect(vec4 drawCol, Image image, vec2 uvs, vec2 pixelPos){
 		float scale = min(screenSize.x,screenSize.y); //find shortest side so x and y coords are scaled the same
@@ -21,10 +36,16 @@ vec4 effect(vec4 drawCol, Image image, vec2 uvs, vec2 pixelPos){
     vec3 netCol = vec3(0);
     for (int i = 0; i < numLights; i++) {
         Light light = lights[i];
-        light.position = light.position / scale; //normalise light pos
+        light.a = light.a / scale; //normalise light pos a
+        light.b = light.b / scale; //normalise light pos b
 				light.spread = light.spread/scale;
 
-        float distance = length(light.position - pixelPos); //find distance to light from pixel drawing
+        float distance;
+        if (light.isPoint){
+          distance = length(light.a - pixelPos);
+        }else{
+          distance = distToLine(pixelPos,light.a,light.b);
+        }
         distance = distance/light.spread; //normalise distance to a percentage of light spread
 
         if (distance<1.0){

@@ -3,11 +3,13 @@ local Color = Class:new("color",{r=0,g=0,b=0,a=0,
 		return a.r==b.r and a.g==b.g and a.b==b.b and a.a==b.a
 	end},
 })
+local function randDec() return math.random(0,100)/100 end
 
 function Col(r,g,b,a)
 	local a = a or 1
 	return Color:obj({r=r,g=g,b=b,a=a})
 end
+function ColRand() return Col(randDec(),randDec(),randDec()) end
 Colors = {white=Col(1,1,1),black=Col(0,0,0)}
 function ConstructCol(args) return Col(args.r,args.g,args.b,args.a) end
 

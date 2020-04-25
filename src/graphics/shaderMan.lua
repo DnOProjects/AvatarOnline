@@ -2,12 +2,21 @@ local shaderMan = {} --manages shaders
 
 local numLights = 0
 
-function shaderMan.light(pos,col,intensity,spread)
+function shaderMan.light(pos,args)
+  local isPoint = (args.type or 'point') == 'point'
   local lightString = 'lights['..tostring(numLights)..'].'
-  Shader:send(lightString..'position', {pos.x,pos.y})
-  Shader:send(lightString..'color', {col.r,col.g,col.b})
-  Shader:send(lightString..'intensity', intensity)
-  Shader:send(lightString..'spread', spread)
+
+  Shader:send(lightString..'isPoint', isPoint)
+  Shader:send(lightString..'a', {pos.x,pos.y})
+  Shader:send(lightString..'color', {args.col.r,args.col.g,args.col.b})
+  Shader:send(lightString..'intensity', args.intensity)
+  Shader:send(lightString..'spread', args.spread)
+
+  if not isPoint then --send line segment info
+    local b = args.endPos or pos+VecPol(args.length,args.dir)
+    Shader:send(lightString..'b',{b.x,b.y})
+  end
+
   numLights = numLights + 1
 end
 
