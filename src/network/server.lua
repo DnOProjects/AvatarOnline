@@ -93,7 +93,6 @@ end
 function server.requestAddObj(object,clientID,append) --sends to all if client == nil; append forces the reciever to append the object to their list
   server.request({object=object,append=append},"addObj",clientID)
 end
-function server.requestSetGlobal(k,v,clientID) server.request({k=k,v=v},'setGlobal',clientID) end
 function server.updateClientData(object) server.request({id=object.id,data=object:getClientData()},'changeObj') end
 
 return server

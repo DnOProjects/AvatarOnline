@@ -1,7 +1,7 @@
 local Object = require 'src/game/object'
 
 local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,dead=false,lastR=0,clientID=nil,getDrawData=function(self)
-  return {pos=self.pos,img='katara',r=self.lastR,dead=self.dead}
+  return {pos=self.pos,img='katara',r=self.lastR,dead=self.dead,hpP=self.hp/self.maxHp}
 end})
 
 function Player:move(request)
@@ -28,7 +28,7 @@ function Player:onCreate() self:setHp(self.maxHp) end
 function Player:setHp(x)
   self.hp = x
   if self.hp<0 then self.hp = 0 end
-  server.requestSetGlobal('hp',self.hp,self.clientID)
+  server.updateClientData(self)
   if self.hp==0 then self:die() end
 end
 function Player:die()
