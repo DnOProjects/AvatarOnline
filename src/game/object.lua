@@ -25,7 +25,7 @@ function Object:updateTouches()
   end
   for i=#self.currentlyTouching,1,-1 do --Remove touching objects
     local object = Objects[self.currentlyTouching[i]]
-    if not self:touching(object) then
+    if object==nil or (not self:touching(object)) then --no longer touching object if nil(removed) or not touching
       table.remove(self.currentlyTouching,i)
       self:onLeaves()
     end
