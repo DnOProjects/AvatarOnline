@@ -39,8 +39,8 @@ local function addPrint(pages, text, x, y, limit, textSize, font, r, g, b, a, al
 	prints[#prints+1] = {pages = pages, text = text, x = x, y = y, limit = limit, textSize = textSize, font = font, color = {r, g, b, a}, align = align}
 end
 
-local function addPiChart(page, x, y, radius, segments, r, g, b, a)
-	piCharts[#piCharts+1] = {page = page, x = x, y = y, radius = radius, segments = segments, color = {r, g, b, a}}
+local function addPiChart(page, pos, outerR, innerR, segments, color, alpha)
+	piCharts[#piCharts+1] = {page = page, pos=pos, outerR = outerR, innerR=innerR, segments = segments, color = color, alpha = alpha}
 end
 
 local function initUI()
@@ -69,9 +69,9 @@ local function initUI()
 		client.request({id=client.playerID},'respawn')
 	end)
 
-	addPiChart("switchMove", 960, 540, 300, 12, 0.2, 0.2, 0.2, 1)
-	addPiChart("switchMove", 960, 540, 200, 3, 0.3, 0.3, 0.3, 1)
-	addPiChart("switchMove", 960, 540, 100, 0, 0.5, 0.5, 0.5, 1)
+	addPiChart("switchMove", Vec(960, 540), 300, 200, 12, Col(0.2,0.2,0.2),0.5)
+	addPiChart("switchMove", Vec(960, 540), 200, 50, 3, Col(0.5,0.5,0.5),0.5)
+	addPiChart("switchMove", Vec(960, 540), 50, 0, 0, Col(1,1,1),0.5)
 end
 
 function ui.load()
@@ -202,23 +202,23 @@ local function drawPrints()
 	end
 end
 
-local function circle(pos,fillCol,r) --temp
-	fillCol:use()
+local function circle(pos,fillCol,r,a) --temp
+	fillCol:setA(a):use()
 	love.graphics.circle("fill",pos.x,pos.y,r)
-	Col(1,1,1):use()
+	Col(1,1,1,a):use()
 	love.graphics.circle("line",pos.x,pos.y,r)
 end
 
 local function drawPiCharts()
 	for i, piChart in ipairs(piCharts) do
 		if (currentPage == piChart.page) then
-			local pos = Vec(piChart.x, piChart.y)
-			circle(pos,Col(piChart.color),piChart.radius)
+			circle(piChart.pos,piChart.color,piChart.outerR,piChart.alpha)
 			if (piChart.segments ~= 0) then
 				local step = 1/piChart.segments
 				for dir=step,1,step do
-					local p = pos+VecPol(piChart.radius,dir*math.pi*2)
-					love.graphics.line(piChart.x,piChart.y,p.x,p.y)
+					local a = piChart.pos+VecPol(piChart.innerR,dir*math.pi*2)
+					local b = piChart.pos+VecPol(piChart.outerR,dir*math.pi*2)
+					love.graphics.line(a.x,a.y,b.x,b.y)
 				end
 			end
 		end
