@@ -1,5 +1,7 @@
 local graphics = {}
 
+function graphics.pathPos(path) return path.start + path.vel*path.time end
+
 function graphics.draw()
   for x=0,10 do
     for y=0,10 do
@@ -12,7 +14,7 @@ function graphics.draw()
       local pos
       --Find pos
       if obj.pos then pos = obj.pos end
-      if obj.path then pos = obj.path.start + obj.path.vel*obj.path.time end
+      if obj.path then pos = graphics.pathPos(obj.path) end
 
       assets.draw(obj.img,pos,obj.r or 0,1)
     end

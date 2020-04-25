@@ -7,12 +7,13 @@ Constructors = {vector = ConstructVec, color = ConstructCol}
 enet = require 'enet' --built-in module
 assets = require 'src/assets'
 debugger, input, objMan, utils = require 'src/debugger', require 'src/input', require 'src/objectManager', require 'src/utils'
-graphics, scale, hud, ui = require 'src/graphics/graphics', require 'src/graphics/scale', require 'src/graphics/hud', require 'src/graphics/ui'
+graphics, scale, hud, ui, shaderMan = require 'src/graphics/graphics', require 'src/graphics/scale', require 'src/graphics/hud', require 'src/graphics/ui', require 'src/graphics/shaderMan'
 client, server, bitser, net = require 'src/network/client', require 'src/network/server', require 'src/network/bitser', require 'src/network/net'
 Object, Player = require 'src/game/object', require 'src/game/player'
 game = require 'src/game/game'
 --Global variables
 Objects = 'unbound' --a reference to the active node's objects list
+Shader = love.graphics.newShader("src/graphics/pixelshader.frag","src/graphics/vertexshader.vert")
 Hosting = true --True: runs a server and a client; False: runs just a client
 Ip = 'localhost'
 if not Hosting then
@@ -39,8 +40,7 @@ function love.draw()
 	ui.drawBackgrounds()
 	client.draw()
 --	if Hosting then server.draw() end --for debug ONLY
-  	debugger.draw()
+  debugger.draw()
 
 	love.graphics.pop()
-
 end

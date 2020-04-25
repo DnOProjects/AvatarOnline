@@ -33,6 +33,15 @@ function client.update(dt) --Called before main game updates
     input.update(dt)
     objMan.clearTrash()
     if server then debugger.logClient(server,client) end
+
+    --temp:
+    for i,obj in ipairs(Objects) do
+      if not obj.trash then
+        if obj.path then shaderMan.light(graphics.pathPos(obj.path),Col(1,1,1),0.5,200) end
+      end
+    end
+
+    shaderMan.update(dt) --must be called after all calls to shaderMan.light
     broadcast()
   end
   Objects = 'unbound'
@@ -40,7 +49,9 @@ end
 function client.draw()
   if client.connected and utils.inList(currentPage, ui.getIGPages()) then
     Objects = objects
+    love.graphics.setShader(Shader)
     graphics.draw()
+    love.graphics.setShader()
     hud.draw()
     Objects = 'unbound'
   end
