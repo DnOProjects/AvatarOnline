@@ -25,18 +25,18 @@ local function addBackgroundImage(pages, image)
 	backgrounds[#backgrounds+1] = {pages = pages, image = image}
 end
 
-local function addButton(page, pageToGo, text, x, y, width, height, textSize, r, g, b, a, onPress) --on press is an optional arguement
-	buttons[#buttons+1] = {page = page, pageToGo = pageToGo, text = text, x = x, y = y, width = width, height = height, textSize = textSize, font = "IMMORTAL", color = {r, g, b, a}, mouseOver = false, onPress = onPress or function() end}
+local function addButton(page, pageToGo, text, x, y, width, height, textSize, font, r, g, b, a, onPress) --on press is an optional arguement
+	buttons[#buttons+1] = {page = page, pageToGo = pageToGo, text = text, x = x, y = y, width = width, height = height, textSize = textSize, font = font, color = {r, g, b, a}, mouseOver = false, onPress = onPress or function() end}
 end
 
-local function addSlider(page, text, x, y, width, height, textSize, r, g, b, a, value, sliderWidth, sliderHeight)
+local function addSlider(page, text, x, y, width, height, textSize, font, r, g, b, a, value, sliderWidth, sliderHeight)
 	-- sliderWidth must be even as it is halved
 	-- sliderHeight must be odd as the 3 from the slider line is odd
-	sliders[#sliders+1] = {page = page, text = text, x = x, y = y, width = width, height = height, textSize = textSize, font = "IMMORTAL", color = {r, g, b, a}, value = value, sliderWidth = sliderWidth, sliderHeight = sliderHeight}
+	sliders[#sliders+1] = {page = page, text = text, x = x, y = y, width = width, height = height, textSize = textSize, font = font, color = {r, g, b, a}, value = value, sliderWidth = sliderWidth, sliderHeight = sliderHeight}
 end
 
-local function addPrint(pages, text, x, y, limit, textSize, r, g, b, a, align)
-	prints[#prints+1] = {pages = pages, text = text, x = x, y = y, limit = limit, textSize = textSize, font = "TropicalAsian", color = {r, g, b, a}, align = align}
+local function addPrint(pages, text, x, y, limit, textSize, font, r, g, b, a, align)
+	prints[#prints+1] = {pages = pages, text = text, x = x, y = y, limit = limit, textSize = textSize, font = font, color = {r, g, b, a}, align = align}
 end
 
 local function addPiChart(page, x, y, radius, segments, r, g, b, a)
@@ -49,23 +49,23 @@ local function initUI()
 	addIGPage("deathScreen")
 
 	addBackgroundImage({1, 2}, assets.get("image", "dirt"))
-	addPrint({1, 2}, "Elements Online", 0, 50, 1920, 150, 0, 0.1, 0.15, 1, "center")
+	addPrint({1, 2}, "Elements Online", 0, 50, 1920, 150, "TropicalAsian", 0, 0.1, 0.15, 1, "center")
 
-	addButton(1, "inGame", "Play", 200, 250, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, function()
+	addButton(1, "inGame", "Play", 200, 250, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6, function()
 		if Hosting then
 			server.start('*:'..Port) -- Starts the server once button pushed
 		end
 		client.connect(Ip..':'..Port) -- Connects the client once the button is pushed
 	end)
-	addButton(1, 2, "Options", 200, 450, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
-	addButton(1, "exit", "Exit", 200, 650, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, function()
+	addButton(1, 2, "Options", 200, 450, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6)
+	addButton(1, "exit", "Exit", 200, 650, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6, function()
 		love.event.quit()
 	end)
 
-	addSlider(2, "Master", 200, 250, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, volume, 6, 11)
-	addButton(2, 1, "Back", 200, 650, 500, 140, 70, 0.1, 0.1, 0.1, 0.6)
+	addSlider(2, "Master", 200, 250, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6, volume, 6, 11)
+	addButton(2, 1, "Back", 200, 650, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6)
 
-	addButton("deathScreen", "inGame", "Respawn", 710, 470, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, function()
+	addButton("deathScreen", "inGame", "Respawn", 710, 470, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6, function()
 		client.request({id=client.playerID},'respawn')
 	end)
 
@@ -99,6 +99,7 @@ local function updateIGPages()
 					canChangePage = true
 				end
 			end
+
 		end
 	end
 end
