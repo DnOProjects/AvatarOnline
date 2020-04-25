@@ -13,12 +13,11 @@ local piCharts = {}
 
 local canClick = true
 local canSlide = true
-local canChangePage = true
 
 -- Loads
 local function addIGPage(page, key)
 	key = key or "noKey"
-	IGPages[#IGPages+1] = {page = page, key = key}
+	IGPages[#IGPages+1] = {page = page, key = key, canChangePage = true}
 end
 
 local function addBackgroundImage(pages, image)
@@ -45,6 +44,7 @@ end
 
 local function initUI()
 	addIGPage("inGame")
+	addIGPage("inGameMenu", "escape")
 	addIGPage("switchMove", "space")
 	addIGPage("deathScreen")
 
@@ -65,13 +65,16 @@ local function initUI()
 	addSlider(2, "Master", 200, 250, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6, volume, 6, 11)
 	addButton(2, 1, "Back", 200, 650, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6)
 
-	addButton("deathScreen", "inGame", "Respawn", 710, 470, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6, function()
-		client.request({id=client.playerID},'respawn')
-	end)
+	addButton("inGameMenu", "inGame", "Resume", 710, 250, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6)
+	addButton("inGameMenu", 1, "Back to menu", 710, 650, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6)
 
 	addPiChart("switchMove", Vec(960, 540), 300, 200, 12, Col(0.2,0.2,0.2),0.5)
 	addPiChart("switchMove", Vec(960, 540), 200, 50, 3, Col(0.5,0.5,0.5),0.5)
 	addPiChart("switchMove", Vec(960, 540), 50, 0, 0, Col(1,1,1),0.5)
+
+	addButton("deathScreen", "inGame", "Respawn", 710, 470, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6, function()
+		client.request({id=client.playerID},'respawn')
+	end)
 end
 
 function ui.load()
@@ -87,16 +90,16 @@ local function updateIGPages()
 		if utils.inList(currentPage, ui.getIGPages()) then
 			if IGPage.key ~= "noKey" then
 				if love.keyboard.isDown(IGPage.key) then
-					if canChangePage == true then
+					if IGPage.canChangePage == true then
 						if (currentPage == IGPage.page) then
 							currentPage = "inGame"
 						else
 							currentPage = IGPage.page
 						end
-						canChangePage = false
+						IGPage.canChangePage = false
 					end
 				else
-					canChangePage = true
+					IGPage.canChangePage = true
 				end
 			end
 
@@ -132,6 +135,14 @@ local function updateSliders()
 					end
 				end
 			end
+		end
+	end
+end
+
+local function updatePiCharts()
+	for i, piChart in ipairs(piCharts) do
+		if (currentPage == piChart.page) then
+
 		end
 	end
 end
