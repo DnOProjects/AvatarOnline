@@ -9,6 +9,7 @@ local backgrounds = {}
 local buttons = {}
 local sliders = {}
 local prints = {}
+local piCharts = {}
 
 local canClick = true
 local canSlide = true
@@ -37,6 +38,10 @@ local function addPrint(pages, text, x, y, limit, textSize, r, g, b, a, align)
 	prints[#prints+1] = {pages = pages, text = text, x = x, y = y, limit = limit, textSize = textSize, font = "TropicalAsian", color = {r, g, b, a}, align = align}
 end
 
+local function addPiChart(page, x, y, radius, segments, r, g, b, a)
+	piCharts[#piCharts+1] = {page = page, x = x, y = y, radius = radius, segments = segments, color = {r, g, b, a}}
+end
+
 local function initUI()
 	addIGPage("inGame")
 	addIGPage("deathScreen")
@@ -61,6 +66,10 @@ local function initUI()
 	addButton("deathScreen", "inGame", "Respawn", 710, 470, 500, 140, 70, 0.1, 0.1, 0.1, 0.6, function()
 		client.request({id=client.playerID},'respawn')
 	end)
+
+	addPiChart(1, 960, 540, 300, 12, 0.2, 0.2, 0.2, 1)
+	addPiChart(1, 960, 540, 200, 3, 0.3, 0.3, 0.3, 1)
+	addPiChart(1, 960, 540, 100, 0, 0.5, 0.5, 0.5, 1)
 end
 
 function ui.load()
@@ -168,10 +177,33 @@ local function drawPrints()
 	end
 end
 
+local function circle(pos,fillCol,r) --temp
+	fillCol:use()
+	love.graphics.circle("fill",pos.x,pos.y,r)
+	Col(1,1,1):use()
+	love.graphics.circle("line",pos.x,pos.y,r)
+end
+
+local function drawPiCharts()
+	for i, piChart in pairs(piCharts) do
+		if (currentPage == piChart.page) then
+			local pos = Vec(piChart.x, piChart.y)
+			circle(pos,Col(piChart.color),piChart.radius)
+			if (piChart.segments ~= 0) then
+				for dir=1/12,1,1/piChart.segments do
+					local p = pos+VecPol(piChart.radius,dir*math.pi*2)
+					love.graphics.line(piChart.x,piChart.y,p.x,p.y)
+				end
+			end
+		end
+	end
+end
+
 function ui.draw()
 	drawButtons()
 	drawSliders()
 	drawPrints()
+	drawPiCharts()
 end
 
 -- Other functions
