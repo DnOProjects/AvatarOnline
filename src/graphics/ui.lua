@@ -216,8 +216,8 @@ local function drawPiCharts()
 			if (piChart.segments ~= 0) then
 				local step = 1/piChart.segments
 				for dir=step,1,step do
-					local a = piChart.pos+VecPol(piChart.innerR,dir*math.pi*2)
-					local b = piChart.pos+VecPol(piChart.outerR,dir*math.pi*2)
+					local a = piChart.pos+VecPol(piChart.innerR,dir*math.pi*2 - math.pi/2)
+					local b = piChart.pos+VecPol(piChart.outerR,dir*math.pi*2 - math.pi/2)
 					love.graphics.line(a.x,a.y,b.x,b.y)
 				end
 			end
