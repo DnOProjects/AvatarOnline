@@ -13,6 +13,7 @@ local piCharts = {}
 
 local canClick = true
 local canSlide = true
+local canChangePage = true
 
 -- Loads
 local function addIGPage(page, key)
@@ -44,6 +45,7 @@ end
 
 local function initUI()
 	addIGPage("inGame")
+	addIGPage("switchMove", "space")
 	addIGPage("deathScreen")
 
 	addBackgroundImage({1, 2}, assets.get("image", "dirt"))
@@ -67,9 +69,9 @@ local function initUI()
 		client.request({id=client.playerID},'respawn')
 	end)
 
-	addPiChart(1, 960, 540, 300, 12, 0.2, 0.2, 0.2, 1)
-	addPiChart(1, 960, 540, 200, 3, 0.3, 0.3, 0.3, 1)
-	addPiChart(1, 960, 540, 100, 0, 0.5, 0.5, 0.5, 1)
+	addPiChart("switchMove", 960, 540, 300, 12, 0.2, 0.2, 0.2, 1)
+	addPiChart("switchMove", 960, 540, 200, 3, 0.3, 0.3, 0.3, 1)
+	addPiChart("switchMove", 960, 540, 100, 0, 0.5, 0.5, 0.5, 1)
 end
 
 function ui.load()
@@ -80,6 +82,27 @@ function ui.load()
 end
 
 -- Updates
+local function updateIGPages()
+	for i, IGPage in pairs(IGPages) do
+		if utils.inList(currentPage, ui.getIGPages()) then
+			if IGPage.key ~= "noKey" then
+				if love.keyboard.isDown(IGPage.key) then
+					if canChangePage == true then
+						if (currentPage == IGPage.page) then
+							currentPage = "inGame"
+						else
+							currentPage = IGPage.page
+						end
+						canChangePage = false
+					end
+				else
+					canChangePage = true
+				end
+			end
+		end
+	end
+end
+
 local function updateButtons()
 	for i, button in pairs(buttons) do
 		if (button.page == currentPage) then
@@ -113,6 +136,7 @@ local function updateSliders()
 end
 
 function ui.update()
+	updateIGPages()
 	updateButtons()
 	updateSliders()
 	if love.mouse.isDown(1) == true then
