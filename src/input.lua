@@ -18,7 +18,7 @@ function input.update(dt)
     local moveDir = Vec()
     for k,v in pairs(moveDirs) do
         if love.keyboard.isDown(k) then
-            moveDir = moveDir+v*5
+            moveDir = moveDir+v
         end
     end
     if moveDir~=Vec() then

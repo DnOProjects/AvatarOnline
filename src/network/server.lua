@@ -7,6 +7,16 @@ local clients = {} --to store the clients when they connect
 local clientRequests = {} --to store accumulated requests for each client
 local objects = {}
 
+local grid = {}
+for x=1,GridSize.x do
+  grid[x] = {}
+  for y=1,GridSize.y do
+    grid[x][y] = {h=math.random(-1,1)} --h is height (-1,0,1)
+  end
+end
+
+
+
 local function broadcast() --send all accumulated requests
   for i, requests in ipairs(clientRequests) do
     if #requests>0 then clients[i]:send(bitser.dumps(requests)) end
@@ -21,6 +31,7 @@ end
 function server.update(dt) --Called before main game updates
   if Hosting and server.running then
     Objects = objects
+    Grid = grid
     for i=1,#clientRequests do clientRequests[i] = {} end --clear requests
     net.getEvents(server) --get events triggered by clients and call the appropriate handler method
     game.update(dt) --process game logic and send requests based from resultant state changes
@@ -28,6 +39,7 @@ function server.update(dt) --Called before main game updates
     debugger.logServer(server)
     objMan.clearTrash()
     Objects = 'unbound'
+    Grid = 'unbound'
   end
 end
 function server.draw()
@@ -68,6 +80,12 @@ function server.handleConnect(client)
 
   print("Server: Sending",#objects,'objects to the new guy')
   for i=1,#objects do server.requestAddObj(objects[i]:getClientData(),clientID,true) end   --Send all current objects to new client
+  print("Server: Sending all the tiles to the new guy")
+  for x=1,GridSize.x do
+    for y=1,GridSize.y do
+      server.request({pos=Vec(x,y),tile=grid[x][y]},'setTile',clientID)
+    end
+  end
   print("Server: Making the new guy a body")
   local player = game.createObject('player',{clientID=clientID}) --Add new player object
   print("Server: Telling the new guy where his body is: ",player.id)

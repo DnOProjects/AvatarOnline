@@ -8,6 +8,8 @@ local client = {
 }
 local server --bound peer object that it is connected to
 local objects = {} --client-side objects list to draw graphics, interpret inputs and provide instant feedback with
+local grid = {}
+for x=1,GridSize.x do grid[x] = {} end
 local requests = {}
 
 local function broadcast() --sends all accumulated requests
@@ -25,6 +27,7 @@ end
 function client.update(dt) --Called before main game updates
   requests = {} --clear requests
   Objects = objects
+  Grid = grid
   if client.requestedConnection then net.getEvents(client) end
   ui.update()
   if client.connected then
@@ -33,30 +36,19 @@ function client.update(dt) --Called before main game updates
     input.update(dt)
     objMan.clearTrash()
     if server then debugger.logClient(server,client) end
-
-    --temp:
-    for i,obj in ipairs(Objects) do
-      if not obj.trash then
-        if obj.path then
-          shaderMan.light(graphics.pathPos(obj.path),{col=Col(1,1,1),intensity=0.5,spread=100})
-        end
-      end
-    end
-    shaderMan.light(Vec(500,500),{col=ColRand(),intensity=3,spread=math.random(1,20),type='line',dir=math.pi*(math.sin(love.timer.getTime())+1),length=10000})
-
-    shaderMan.update(dt) --must be called after all calls to shaderMan.light
     broadcast()
   end
   Objects = 'unbound'
+  Grid = 'unbound'
 end
 function client.draw()
   if client.connected and utils.inList(currentPage, ui.getIGPages()) then
     Objects = objects
-    love.graphics.setShader(Shader)
+    Grid = grid
     graphics.draw()
-    love.graphics.setShader()
     hud.draw()
     Objects = 'unbound'
+    Grid = 'unbound'
   end
   ui.draw()
 end
@@ -78,6 +70,7 @@ function client.handleRequest(from,request) --requests are recieved from the ser
     objMan.addObject(request.object,request.append)
   end
   if request.type=='removeObj' then objMan.removeObject(request.id) end
+  if request.type=='setTile' then map.setTile(request.pos,request.tile) end
   if request.type=='changeObj' then
     objects[request.id] = request.data
     objects[request.id].id = request.id --restore lost id
