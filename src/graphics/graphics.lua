@@ -15,8 +15,34 @@ function graphics.draw()
     shaderMan.light(Vec(500,500),{col=ColRand(),intensity=3,spread=math.random(1,20),type='line',dir=math.pi*(math.sin(love.timer.getTime())+1),length=10000})
     shaderMan.send() --must be called after all calls to shaderMan.light
 
+    --Draw map
     map.drawLayer(h)
 
+    --Draw object shadow
+    for i,obj in ipairs(Objects) do
+      if (not obj.trash) and (not obj.dead) and obj.h==h then
+        local pos
+        --Find pos
+        if obj.pos then pos = obj.pos end
+        if obj.path then pos = graphics.pathPos(obj.path) end
+        local tilePos = ((pos+VecSquare(CliffWidth*h))/TileSize):floor()+VecSquare(1)
+        if Grid[tilePos.x]~=nil and Grid[tilePos.x][tilePos.y]~=nil then
+          local tileH = Grid[tilePos.x][tilePos.y].h
+          local heightDiff = h - tileH
+
+          if heightDiff>0 then
+            pos = pos + VecSquare(CliffWidth*heightDiff)
+            local a, size = 0.4, 20
+            if heightDiff==2 then a, size = 0.2, 30 end
+            Col(0,0,0,a):use()
+            love.graphics.circle('fill',pos.x,pos.y,size)
+          end
+        end
+      end
+    end
+    Col(1,1,1):use()
+
+    --Draw objects
     for i,obj in ipairs(Objects) do
       if (not obj.trash) and (not obj.dead) and obj.h==h then
         local pos

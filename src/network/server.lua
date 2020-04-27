@@ -87,7 +87,7 @@ function server.handleConnect(client)
     end
   end
   print("Server: Making the new guy a body")
-  local player = game.createObject('player',{clientID=clientID}) --Add new player object
+  local player = game.createObject('player',{clientID=clientID,pos=Vec(100,100)}) --Add new player object
   print("Server: Telling the new guy where his body is: ",player.id)
   server.request({playerID=player.id},'acceptEntry',clientID) --Send the client their player's id
 end
