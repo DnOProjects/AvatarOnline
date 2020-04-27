@@ -4,27 +4,31 @@ local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,dead=fals
   return {pos=self.pos,img='katara',r=self.lastR,dead=self.dead,hpP=self.hp/self.maxHp,h=self.height}
 end})
 
-function Player:setPos(pos)
-  self.pos = pos
-  if self.pos.x<0 then self.pos.x=0 end
-  if self.pos.x>1920 then self.pos.x=1920 end
-  if self.pos.y<0 then self.pos.y=0 end
-  if self.pos.y>1080 then self.pos.y=1080 end
-end
-
 function Player:move(request)
-  local speed, oldPos, sliding = 5, self.pos, false
-  self:setPos(self.pos+request.vec*speed)
-  for i=1,2 do if not self:onGround() then
-    self.height = self.height - 1
-    sliding = self:touchingPillar()
-  end end
-  if sliding then
-    while sliding do
-      self.pos = self.pos + request.vec
-      sliding = self:touchingPillar()
+  local speed, oldPos, oldHeight, sliding = 5, utils.copy(self.pos), self.height, false
+  self.pos = self.pos+request.vec*speed
+
+  --Test for collision with screen boundries
+  local p = self.pos + VecSquare(CliffWidth)*self.height
+  if p.x+self.hitR>1920 or p.x-self.hitR<0 or p.y+self.hitR>1080 or p.y-self.hitR<0 then self.pos = utils.copy(oldPos) end
+
+  for i=1,2 do
+    if not self:onGround() then
+      self.height = self.height - 1
+      self.pos = self.pos + VecSquare(CliffWidth)
     end
-  elseif self:touchingPillar() then self.pos = oldPos end
+ end
+
+ --Resolve collision with pillar
+ if self:touchingPillar() then
+    self.pos.y = self.pos.y - speed*request.vec.y
+    if self:touchingPillar() then
+      self.pos.y = self.pos.y + speed*request.vec.y
+      self.pos.x = self.pos.x - speed*request.vec.x
+      if self:touchingPillar() then self.pos = utils.copy(oldPos) end
+    end
+  end
+
   self.lastR = request.vec:getDir()+math.pi/2
   server.updateClientData(self)
 end

@@ -10,13 +10,10 @@ end})
 
 function game.update(dt)
     for i, object in ipairs(Objects) do
-      if object.pos.x > 1920 or object.pos.x<0 or object.pos.y > 1080 or object.pos.y<0 then server.removeObject(i) end
+      if (not object.player) and (object.pos.x > 1920 or object.pos.x<0 or object.pos.y > 1080 or object.pos.y<0 or object:touchingPillar()) then server.removeObject(i) end
         if (not object.trash) and (not object.dead) then
             object:updateTouches() --apply velocity
-            if object.vel then
-              object.pos = object.pos+object.vel*dt
-              if object:touchingPillar() then server.removeObject(i) end
-            end
+            if object.vel then object.pos = object.pos+object.vel*dt end
         end
     end
 end

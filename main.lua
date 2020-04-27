@@ -1,3 +1,7 @@
+--TODO:
+--fix bug where pushing against a pillar thinks your a different ypos to the pillar so pushes you up so oob
+--change cliff height to e.g. 30
+
 --Global classes
 require 'src/classes/class'
 require 'src/classes/vector'
