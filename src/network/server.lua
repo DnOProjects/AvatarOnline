@@ -11,7 +11,9 @@ local grid = {}
 for x=1,GridSize.x do
   grid[x] = {}
   for y=1,GridSize.y do
-    grid[x][y] = {h=math.random(-1,1)} --h is height (-1,0,1)
+    local height = math.random(-1,10)
+    if height>1 then height = 0 end
+    grid[x][y] = {h=height} --h is height (-1,0,1)
   end
 end
 
