@@ -30,17 +30,16 @@ function love.update(dt)
 	scale.update()
 	debugger.update(dt)
 	server.update(dt)  --Gets clients' requests, runs the game, sends instructions to clients
-	client.update(dt) --Gets server's instructions, sends requests to server
+	client.update(dt) --size, errormsg = love.filesystem.getSize(filename) server's instructions, sends requests to server
 end
 
 function love.draw()
-	love.graphics.push()
-	scale.draw()
+	scale.drawStart()
 
 	ui.drawBackgrounds()
 	client.draw()
 --	if Hosting then server.draw() end --for debug ONLY
-  debugger.draw()
+  	debugger.draw()
 
-	love.graphics.pop()
+	scale.drawEnd()
 end

@@ -38,13 +38,13 @@ function client.update(dt) --Called before main game updates
     for i,obj in ipairs(Objects) do
       if not obj.trash then
         if obj.path then
-          shaderMan.light(graphics.pathPos(obj.path),{col=Col(1,1,1),intensity=0.5,spread=100})
+          --shaderMan.light(graphics.pathPos(obj.path),{col=Col(1,1,1),intensity=0.5,spread=100})
         end
       end
     end
-    shaderMan.light(Vec(500,500),{col=ColRand(),intensity=3,spread=math.random(1,20),type='line',dir=math.pi*(math.sin(love.timer.getTime())+1),length=10000})
+    --shaderMan.light(Vec(500,500),{col=ColRand(),intensity=3,spread=math.random(1,20),type='line',dir=math.pi*(math.sin(love.timer.getTime())+1),length=10000})
 
-    shaderMan.update(dt) --must be called after all calls to shaderMan.light
+    --shaderMan.update(dt) --must be called after all calls to shaderMan.light
     broadcast()
   end
   Objects = 'unbound'

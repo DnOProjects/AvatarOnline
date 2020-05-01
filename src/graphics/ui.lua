@@ -48,7 +48,7 @@ local function initUI()
 	addIGPage("switchMove", "space")
 	addIGPage("deathScreen")
 
-	addBackgroundImage({1, 2}, assets.get("image", "dirt"))
+	addBackgroundImage({1, 2}, assets.get("image", "magicBackground"))
 	addPrint({1, 2}, "Elements Online", 0, 50, 1920, 150, "TropicalAsian", 0, 0.1, 0.15, 1, "center")
 
 	addButton(1, "inGame", "Play", 200, 250, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6, function()
@@ -163,11 +163,7 @@ end
 function ui.drawBackgrounds()
 	for i, background in pairs(backgrounds) do
 		if (utils.inList(currentPage, background.pages)) then
-			for x=0,10 do
-				for y=0,10 do
-					love.graphics.draw(background.image,x*200,y*200)
-				end
-			end
+			love.graphics.draw(background.image)
 		end
 	end
 end

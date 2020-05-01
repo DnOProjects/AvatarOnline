@@ -3,8 +3,8 @@ local graphics = {}
 function graphics.pathPos(path) return path.start + path.vel*path.time end
 
 function graphics.draw()
-  for x=0,10 do
-    for y=0,10 do
+  for x=0,9 do
+    for y=0,5 do
       love.graphics.draw(assets.get('image','dirt'),x*200,y*200)
     end
   end
