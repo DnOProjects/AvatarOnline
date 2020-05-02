@@ -20,13 +20,13 @@ function shaderMan.light(pos,args)
   numLights = numLights + 1
 end
 
-function shaderMan.update(dt) --must be called after all calls to shaderMan.light
+function shaderMan.send() --must be called after all calls to shaderMan.light
   Shader:send('screenSize', {
 			love.graphics.getWidth(),
 			love.graphics.getHeight()
 	})
 	Shader:send("numLights", numLights)
-  numLights = 0 --reset for next frame
+  numLights = 0 --reset for next send
 end
 
 return shaderMan

@@ -1,5 +1,6 @@
-local Object = Class:new({
+local Object = Class:new('object',{
   pos=Vec(),
+  height = 1, --height from -1 to 1
   hitR=0 --radius in px. when drawn without any scaling for the hitcircle (hitbox but circular)
 })
 
@@ -8,6 +9,7 @@ function Object:getDrawData() return {} end
 function Object:onCreate() end
 function Object:onTouches(object) end
 function Object:onLeaves(object) end
+function Object:setPos(pos) self.pos = pos end
 
 function Object:getClientData()
   local data = self:getDrawData()
@@ -32,4 +34,25 @@ function Object:updateTouches()
   end
 end
 
+--Tile related:
+function Object:touchingTile(tileCoords)
+  local p = (tileCoords-VecSquare(1))*TileSize-VecSquare(CliffWidth)*self.height
+  return self.pos.x+self.hitR > p.x and self.pos.x-self.hitR < p.x + TileSize and self.pos.y+self.hitR > p.y and self.pos.y-self.hitR < p.y + TileSize
+end
+function Object:touchingPillar()
+  for x=1,GridSize.x do
+    for y=1,GridSize.y do
+      if Grid[x][y].h > self.height and self:touchingTile(Vec(x,y)) then return true end
+    end
+  end
+  return false
+end
+function Object:onGround()
+  for x=1,GridSize.x do
+    for y=1,GridSize.y do
+      if Grid[x][y].h == self.height and self:touchingTile(Vec(x,y)) then return true end
+    end
+  end
+  return false
+end
 return Object

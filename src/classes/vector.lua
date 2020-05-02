@@ -32,4 +32,9 @@ function Vector:setMag(x) return (self/self:getMag())*x end
 function Vector:getDir() return math.atan2(self.y,self.x) end
 function Vector:setDir(x) return VecPol(self:getMag(),x) end
 function Vector:getText() return 'x: '..self.x..', y: '..self.y end
+function Vector:floor() return Vec(math.floor(self.x),math.floor(self.y)) end
 function Vector:rotate(x) return self:setDir(self:getDir()+x) end
+function Vector:cardinalise()
+	if self.y>self.x then return Vec(0,self.y) end
+	return Vec(self.x,0)
+end
