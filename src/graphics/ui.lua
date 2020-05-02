@@ -49,7 +49,7 @@ local function initUI()
 	addIGPage("deathScreen")
 
 	addBackgroundImage({1, 2}, assets.get("image", "magicBackground"))
-	addPrint({1, 2}, "Elements Online", 0, 50, 1920, 150, "TropicalAsian", 0, 0.1, 0.15, 1, "center")
+	addPrint({1, 2}, "Elements Online", 0, 50, 1920, 150, "TropicalAsian",1,1,1, 1, "center")
 
 	addButton(1, "inGame", "Play", 200, 250, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6, function()
 		if Hosting then

@@ -3,11 +3,6 @@ local graphics = {}
 function graphics.pathPos(path) return path.start + path.vel*path.time end
 
 function graphics.draw()
-  for x=0,9 do
-    for y=0,5 do
-      love.graphics.draw(assets.get('image','dirt/0'),x*200,y*200)
-    end
-  end
   love.graphics.setShader(Shader)
 
   for h=-1,1 do --draw 3 heights in sequence
