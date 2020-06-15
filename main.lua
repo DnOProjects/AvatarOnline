@@ -28,6 +28,7 @@ Port = '25565'
 DEBUG = {
 	drawGrid=false, --wheather to draw an overlay showing tile positions
 }
+enableShaders = true
 
 function love.load()
 	love.window.setFullscreen(true)
