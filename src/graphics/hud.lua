@@ -53,9 +53,9 @@ end
 
 local selectionMenu = {pos = Vec(400,400), items={
   {name="attack",items={
-    {name="water", items={{name="bubble"}, {name="Water whip"}, {name="Ice shards"}}},
+    {name="water", items={{name="bubble"}, {name="waterSpray"}, {name="Ice shards"}}},
     {name="earth",items={{name="Bullets"}, {name="Pebbles"}, {name="Idk im running out of fake names"}}},
-    {name="fire",items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="fire",items={{name="Laser"}, {name="B"}, {name="C"}}},
     {name="air",items={{name="A"}, {name="B"}, {name="C"}}}
   }},
   {name="defend",items={

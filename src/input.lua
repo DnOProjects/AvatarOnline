@@ -21,10 +21,8 @@ function input.update(dt)
 end
 
 function input.abilityTriggered(abilityName)
-  if abilityName=="bubble" then
-    local dir = (VecMouse()-client.player.pos):setMag(1)
-    table.insert(toRequest,{request={dir=dir,id=client.playerID,name='bubble'}, requestType='useAbility'})
-  end
+  local dir = (VecMouse()-client.player.pos):setMag(1)
+  table.insert(toRequest,{request={dir=dir,id=client.playerID,name=abilityName}, requestType='useAbility'})
 end
 
 function love.mousepressed(x,y,button) hud.handleInputEvent({type='mousepress',pos=Vec(mouseX,mouseY),button=button}) end

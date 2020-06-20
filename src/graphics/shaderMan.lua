@@ -1,23 +1,27 @@
 local shaderMan = {} --manages shaders
 
+local MAXLIGHTS = 100 --CONSTANT
 local numLights = 0
 
 function shaderMan.light(pos,args)
-  local isPoint = (args.type or 'point') == 'point'
-  local lightString = 'lights['..tostring(numLights)..'].'
+  if numLights<MAXLIGHTS then --it is intended behavoir for lights after the 1st 100 not to render
 
-  Shader:send(lightString..'isPoint', isPoint)
-  Shader:send(lightString..'a', {pos.x,pos.y})
-  Shader:send(lightString..'color', {args.col.r,args.col.g,args.col.b})
-  Shader:send(lightString..'intensity', args.intensity)
-  Shader:send(lightString..'spread', args.spread)
+    local isPoint = (args.type or 'point') == 'point'
+    local lightString = 'lights['..tostring(numLights)..'].'
 
-  if not isPoint then --send line segment info
-    local b = args.endPos or pos+VecPol(args.length,args.dir)
-    Shader:send(lightString..'b',{b.x,b.y})
+    Shader:send(lightString..'isPoint', isPoint)
+    Shader:send(lightString..'a', {pos.x,pos.y})
+    Shader:send(lightString..'color', {args.col.r,args.col.g,args.col.b})
+    Shader:send(lightString..'intensity', args.intensity)
+    Shader:send(lightString..'spread', args.spread)
+
+    if not isPoint then --send line segment info
+      local b = args.endPos or pos+VecPol(args.length,args.dir)
+      Shader:send(lightString..'b',{b.x,b.y})
+    end
+
+    numLights = numLights + 1
   end
-
-  numLights = numLights + 1
 end
 
 function shaderMan.send() --must be called after all calls to shaderMan.light
