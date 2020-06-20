@@ -32,7 +32,12 @@ local function drawMenu(menu,pos)
     love.graphics.rectangle("fill", itemPos.x, itemPos.y, itemSize.x, itemSize.y)
     Col(1):use()
     love.graphics.rectangle("line", itemPos.x, itemPos.y, itemSize.x, itemSize.y)
-    love.graphics.print(item.name,itemPos.x,itemPos.y)
+    local name = item.name
+    if item.triggerEvent then
+      if item.triggerEvent~=true then name = name..' ('..(item.triggerEvent.key or item.triggerEvent.button)..')'
+      else name = name..' [unset]' end
+    end
+    love.graphics.print(name,itemPos.x,itemPos.y)
   end
 end
 local function updateMenu(menu,pos)
@@ -40,30 +45,30 @@ local function updateMenu(menu,pos)
   local m = VecMouse()
   for i=1,#menu.items do
     local item, itemPos = menu.items[i], pos + Vec(0,(i-1)*itemSize.y)
-    if item.selected and item.items then updateMenu(item,itemPos+Vec(itemSize.x,0)) end
+    if item.items then updateMenu(item,itemPos+Vec(itemSize.x,0)) end
     local inCollumn, inRow = m.x>=pos.x and m.x<=pos.x+itemSize.x, m.y>=itemPos.y and m.y<=itemPos.y+itemSize.y
-    item.selected = (item.selected and not inCollumn) or (inCollumn and inRow)
+    item.selected = (item.selected and m.x>=pos.x+itemSize.x) or (inCollumn and inRow)
   end
 end
 
 local selectionMenu = {pos = Vec(400,400), items={
   {name="attack",items={
-    {name="water", items={{name="Water spray"}, {name="Water whip"}, {name="Ice shards"}}},
-    {name="earth", items={{name="Bullets"}, {name="Pebbles"}, {name="Idk im running out of fake names"}}},
-    {name="fire", items={{name="A"}, {name="B"}, {name="C"}}},
-    {name="air", items={{name="A"}, {name="B"}, {name="C"}}}
+    {name="water", items={{name="bubble"}, {name="Water whip"}, {name="Ice shards"}}},
+    {name="earth",items={{name="Bullets"}, {name="Pebbles"}, {name="Idk im running out of fake names"}}},
+    {name="fire",items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="air",items={{name="A"}, {name="B"}, {name="C"}}}
   }},
   {name="defend",items={
-    {name="water", items={{name="A"}, {name="B"}, {name="C"}}},
-    {name="earth", items={{name="A"}, {name="B"}, {name="C"}}},
-    {name="fire", items={{name="A"}, {name="B"}, {name="C"}}},
-    {name="air", items={{name="A"}, {name="B"}, {name="C"}}}
+    {name="water",items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="earth",items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="fire",items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="air",items={{name="A"}, {name="B"}, {name="C"}}}
   }},
   {name="special",items={
-    {name="water", items={{name="A"}, {name="B"}, {name="C"}}},
-    {name="earth", items={{name="A"}, {name="B"}, {name="C"}}},
-    {name="fire", items={{name="A"}, {name="B"}, {name="C"}}},
-    {name="air", items={{name="A"}, {name="B"}, {name="C"}}}
+    {name="water",items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="earth",items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="fire",items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="air",items={{name="A"}, {name="B"}, {name="C"}}}
   }}
 }}
 
@@ -82,6 +87,22 @@ end
 
 function hud.update()
   if currentPage=="switchMove" then updateMenu(selectionMenu) end
+end
+
+function hud.handleInputEvent(event)
+  for i=1,#selectionMenu.items do
+    for j=1,#selectionMenu.items[i].items do
+      for k=1,#selectionMenu.items[i].items[j].items do
+        local item = selectionMenu.items[i].items[j].items[k]
+        if not item.triggerEvent then item.triggerEvent = true end
+        if currentPage=="switchMove" and item.selected then
+          item.triggerEvent = event
+        elseif item.triggerEvent~=true and event.key==item.triggerEvent.key and event.button==item.triggerEvent.button then
+          input.abilityTriggered(item.name)
+        end
+      end
+    end
+  end
 end
 
 return hud

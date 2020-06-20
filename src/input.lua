@@ -1,19 +1,13 @@
 local input = {}
 
 local moveDirs = {w=Vec(0,-1),a=Vec(-1,0),s=Vec(0,1),d=Vec(1,0)}
-local mousepresses = {} --stores mousepresses until updating input
-local function handleMousepress(press)
-    if press.button==1 then
-        local dir = (press.pos-client.player.pos):setMag(1)
-        client.request({dir=dir,id=client.playerID,name='bubble'},'useAbility')
-    end
-end
+local toRequest = {} --requests stored to submit when client next looks for them
 
 function input.update(dt)
-    for i=1,#mousepresses do
-        handleMousepress(mousepresses[i])
+    for i=1,#toRequest do
+        client.request(toRequest[i].request,toRequest[i].requestType)
     end
-    mousepresses = {} --reset for next time
+    toRequest = {} --reset for next time
 
     local moveDir = Vec()
     for k,v in pairs(moveDirs) do
@@ -26,8 +20,14 @@ function input.update(dt)
     end
 end
 
-function love.mousepressed(x,y,button)
-    table.insert(mousepresses,{pos=Vec(mouseX,mouseY),button=button})
+function input.abilityTriggered(abilityName)
+  if abilityName=="bubble" then
+    local dir = (VecMouse()-client.player.pos):setMag(1)
+    table.insert(toRequest,{request={dir=dir,id=client.playerID,name='bubble'}, requestType='useAbility'})
+  end
 end
+
+function love.mousepressed(x,y,button) hud.handleInputEvent({type='mousepress',pos=Vec(mouseX,mouseY),button=button}) end
+function love.keypressed(key) hud.handleInputEvent({type='keypress',key=key}) end
 
 return input

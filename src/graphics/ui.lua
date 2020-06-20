@@ -15,9 +15,9 @@ local canClick = true
 local canSlide = true
 
 -- Loads
-local function addIGPage(page, key)
+local function addIGPage(page, key, onlyWhileHeld)
 	key = key or "noKey"
-	IGPages[#IGPages+1] = {page = page, key = key, canChangePage = true}
+	IGPages[#IGPages+1] = {page = page, key = key, canChangePage = true, onlyWhileHeld= onlyWhileHeld}
 end
 
 local function addBackgroundImage(pages, image)
@@ -45,7 +45,7 @@ end
 local function initUI()
 	addIGPage("inGame")
 	addIGPage("inGameMenu", "escape")
-	addIGPage("switchMove", "space")
+	addIGPage("switchMove", "space", true)
 	addIGPage("deathScreen")
 
 	addBackgroundImage({1, 2}, assets.get("image", "magicBackground"))
@@ -90,6 +90,7 @@ local function updateIGPages()
 		if utils.inList(currentPage, ui.getIGPages()) then
 			if IGPage.key ~= "noKey" then
 				if love.keyboard.isDown(IGPage.key) then
+					if IGPage.onlyWhileHeld and currentPage~=IGPage.page then IGPage.prevPage = currentPage end
 					if IGPage.canChangePage == true then
 						if (currentPage == IGPage.page) then
 							currentPage = "inGame"
@@ -99,6 +100,7 @@ local function updateIGPages()
 						IGPage.canChangePage = false
 					end
 				else
+					if IGPage.onlyWhileHeld and currentPage==IGPage.page then currentPage = IGPage.prevPage end
 					IGPage.canChangePage = true
 				end
 			end
