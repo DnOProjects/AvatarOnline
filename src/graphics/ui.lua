@@ -68,9 +68,9 @@ local function initUI()
 	addButton("inGameMenu", "inGame", "Resume", 710, 250, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6)
 	addButton("inGameMenu", 1, "Back to menu", 710, 650, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6)
 
-	addPiChart("switchMove", Vec(960, 540), 300, 200, 12, Col(0.2,0.2,0.2),0.5)
-	addPiChart("switchMove", Vec(960, 540), 200, 50, 3, Col(0.5,0.5,0.5),0.5)
-	addPiChart("switchMove", Vec(960, 540), 50, 0, 0, Col(1,1,1),0.5)
+	--addPiChart("switchMove", Vec(960, 540), 300, 200, 12, Col(0.2,0.2,0.2),0.5)
+	--addPiChart("switchMove", Vec(960, 540), 200, 50, 3, Col(0.5,0.5,0.5),0.5)
+	--addPiChart("switchMove", Vec(960, 540), 50, 0, 0, Col(1,1,1),0.5)
 
 	addButton("deathScreen", "inGame", "Respawn", 710, 470, 500, 140, 70, "IMMORTAL", 0.1, 0.1, 0.1, 0.6, function()
 		client.request({id=client.playerID},'respawn')

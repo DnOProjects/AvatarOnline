@@ -21,6 +21,52 @@ local function meter(p,pos,size,col,args)
   Col(1,1,1):use()
 end
 
+local itemSize = Vec(200,50)
+local function drawMenu(menu,pos)
+  local pos = pos or menu.pos
+  for i=1,#menu.items do
+    local item, itemPos = menu.items[i], pos + Vec(0,(i-1)*itemSize.y)
+    if item.selected and item.items then drawMenu(item,itemPos+Vec(itemSize.x,0)) end
+    Col(0.2):use()
+    if item.selected then Col(0.3):use() end
+    love.graphics.rectangle("fill", itemPos.x, itemPos.y, itemSize.x, itemSize.y)
+    Col(1):use()
+    love.graphics.rectangle("line", itemPos.x, itemPos.y, itemSize.x, itemSize.y)
+    love.graphics.print(item.name,itemPos.x,itemPos.y)
+  end
+end
+local function updateMenu(menu,pos)
+  local pos = pos or menu.pos
+  local m = VecMouse()
+  for i=1,#menu.items do
+    local item, itemPos = menu.items[i], pos + Vec(0,(i-1)*itemSize.y)
+    if item.selected and item.items then updateMenu(item,itemPos+Vec(itemSize.x,0)) end
+    local inCollumn, inRow = m.x>=pos.x and m.x<=pos.x+itemSize.x, m.y>=itemPos.y and m.y<=itemPos.y+itemSize.y
+    item.selected = (item.selected and not inCollumn) or (inCollumn and inRow)
+  end
+end
+
+local selectionMenu = {pos = Vec(400,400), items={
+  {name="attack",items={
+    {name="water", items={{name="Water spray"}, {name="Water whip"}, {name="Ice shards"}}},
+    {name="earth", items={{name="Bullets"}, {name="Pebbles"}, {name="Idk im running out of fake names"}}},
+    {name="fire", items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="air", items={{name="A"}, {name="B"}, {name="C"}}}
+  }},
+  {name="defend",items={
+    {name="water", items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="earth", items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="fire", items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="air", items={{name="A"}, {name="B"}, {name="C"}}}
+  }},
+  {name="special",items={
+    {name="water", items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="earth", items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="fire", items={{name="A"}, {name="B"}, {name="C"}}},
+    {name="air", items={{name="A"}, {name="B"}, {name="C"}}}
+  }}
+}}
+
 function hud.draw()
   meter(client.player.hpP,Vec(0,1030),Vec(600,50),Col(1,0,0))
   meter(1,Vec(0,985),Vec(400,50),Col(0.2,0.64,0.95))
@@ -30,6 +76,12 @@ function hud.draw()
       meter(obj.hpP,obj.pos+Vec(-60,50),Vec(120,20),Col(1,0,0))
     end
   end
+
+  if currentPage=="switchMove" then drawMenu(selectionMenu) end
+end
+
+function hud.update()
+  if currentPage=="switchMove" then updateMenu(selectionMenu) end
 end
 
 return hud

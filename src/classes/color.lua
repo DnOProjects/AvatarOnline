@@ -7,6 +7,7 @@ local function randDec() return math.random(0,100)/100 end
 
 function Col(r,g,b,a)
 	local a = a or 1
+	if g==nil and b==nil then return Col(r,r,r,1) end
 	return Color:obj({r=r,g=g,b=b,a=a})
 end
 function ColRand() return Col(randDec(),randDec(),randDec()) end
@@ -23,7 +24,11 @@ function Color:setR(r) return Col(r,self.g,self.b,a) end
 function Color:setG(g) return Col(self.r,g,self.b,a) end
 function Color:setB(b) return Col(self.r,self.g,b,a) end
 function Color:setA(a) return Col(self.r,self.g,self.b,a) end
-function Color:setBrightness(x) return Col(self.r*x,self.g*x,self.b*x,self.a) end
+function Color:shade(x)
+	local prevShade = (self.r+self.g+self.b)/3
+	if prevShade==0 then return Col(shade,shade,shade) end --avoid %0
+	return Col(self.r/prevShade*x,self.g/prevShade*x,self.b/prevShade*x,self.a)
+end
 function Color.mix(a,b,r)
 	return Col(b.r+(a.r-b.r)*r,b.g+(a.g-b.g)*r,b.b+(a.b-b.b)*r,b.a+(a.a-b.a)*r)
 end

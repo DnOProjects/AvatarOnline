@@ -30,6 +30,7 @@ function client.update(dt) --Called before main game updates
   Grid = grid
   if client.requestedConnection then net.getEvents(client) end
   ui.update()
+  hud.update()
   if client.connected then
     client.player = objects[client.playerID] --update player
     graphics.update(dt)
