@@ -55,7 +55,7 @@ local selectionMenu = {pos = Vec(400,400), items={
   {name="attack",items={
     {name="water", items={{name="bubble"}, {name="waterSpray"}, {name="Ice shards"}}},
     {name="earth",items={{name="Bullets"}, {name="Pebbles"}, {name="Idk im running out of fake names"}}},
-    {name="fire",items={{name="Laser"}, {name="B"}, {name="C"}}},
+    {name="fire",items={{name="Laser"}, {name="charge"}, {name="C"}}},
     {name="air",items={{name="A"}, {name="B"}, {name="C"}}}
   }},
   {name="defend",items={
@@ -98,7 +98,8 @@ function hud.handleInputEvent(event)
         if currentPage=="switchMove" and item.selected then
           item.triggerEvent = event
         elseif item.triggerEvent~=true and event.key==item.triggerEvent.key and event.button==item.triggerEvent.button then
-          input.abilityTriggered(item.name)
+          if event.type == 'mouserelease' then input.abilityTriggered(item.name,false)
+          else input.abilityTriggered(item.name,true) end
         end
       end
     end

@@ -64,9 +64,9 @@ function server.handleRequest(client,request)
   local player
   if request.id then player = Objects[request.id] end
 
-  if request.type == 'respawn' then player:respawn() end
-  if request.type=='useAbility' then player:useAbility(request.name,request)
-  elseif request.type=='movePlayer' then player:move(request) end
+  if request.type == 'respawn' then player:respawn()
+  elseif request.type=='movePlayer' then player:move(request)
+  elseif request.type=='triggerAbility' then player:triggerAbility(request.name,request) end
 end
 function server.handleConnect(client)
   --Add client

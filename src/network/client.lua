@@ -4,7 +4,8 @@ local client = {
   player = nil, --is updated to refer to the client's player
   requestedConnection = false,
   connected = false,
-  playerID = nil --unique id of the client's player game object
+  playerID = nil, --unique id of the client's player game object
+  abilitiesWaitingToRelease = {} --list of abilityies that the server would like to be notified about if their button is released
 }
 local server --bound peer object that it is connected to
 local objects = {} --client-side objects list to draw graphics, interpret inputs and provide instant feedback with
@@ -73,21 +74,20 @@ function client.handleRequest(from,request) --requests are recieved from the ser
   --local variables populated for convenience
   local object
   if request.id then object = objects[request.id] end
+
   if request.type=='acceptEntry' then
     client.playerID = request.playerID
     client.connected = true
-  end
-  if request.type=='youDied' then currentPage = "deathScreen" end
-  if request.type=='addObj' then
+  elseif request.type=='youDied' then currentPage = "deathScreen"
+  elseif request.type=='addObj' then
     if request.object.path and server:round_trip_time()<200 then request.object.path.time = server:round_trip_time()/2000 end
     objMan.addObject(request.object,request.append)
-  end
-  if request.type=='removeObj' then objMan.removeObject(request.id) end
-  if request.type=='setTile' then map.setTile(request.pos,request.tile) end
-  if request.type=='changeObj' then
+  elseif request.type=='removeObj' then objMan.removeObject(request.id)
+  elseif request.type=='setTile' then map.setTile(request.pos,request.tile)
+  elseif request.type=='changeObj' then
     objects[request.id] = request.data
     objects[request.id].id = request.id --restore lost id
-  end
+  elseif request.type=='addReleaseListener' then table.insert(client.abilitiesWaitingToRelease,request.abilityName) end
 end
 
 return client

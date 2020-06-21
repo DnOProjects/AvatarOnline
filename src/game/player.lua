@@ -5,40 +5,68 @@ local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,dead=fals
 end})
 
 function Player:move(request)
-  local speed, oldPos, oldHeight, sliding = 5, utils.copy(self.pos), self.height, false
-  self.pos = self.pos+request.vec*speed
+  if not self.immobile then
+    local speed, oldPos, oldHeight, sliding = 5, utils.copy(self.pos), self.height, false
+    self.pos = self.pos+request.vec*speed
 
-  --Test for collision with screen boundries
-  local p = self.pos + VecSquare(CliffWidth)*self.height
-  if p.x+self.hitR>1920 or p.x-self.hitR<0 or p.y+self.hitR>1080 or p.y-self.hitR<0 then self.pos = utils.copy(oldPos) end
+    --Test for collision with screen boundries
+    local p = self.pos + VecSquare(CliffWidth)*self.height
+    if p.x+self.hitR>1920 or p.x-self.hitR<0 or p.y+self.hitR>1080 or p.y-self.hitR<0 then self.pos = utils.copy(oldPos) end
 
-  for i=1,2 do
-    if not self:onGround() then
-      self.height = self.height - 1
-      self.pos = self.pos + VecSquare(CliffWidth)
+    for i=1,2 do
+      if not self:onGround() then
+        self.height = self.height - 1
+        self.pos = self.pos + VecSquare(CliffWidth)
+      end
+   end
+
+   --Resolve collision with pillar
+   if self:touchingPillar() then
+      self.pos.y = self.pos.y - speed*request.vec.y
+      if self:touchingPillar() then
+        self.pos.y = self.pos.y + speed*request.vec.y
+        self.pos.x = self.pos.x - speed*request.vec.x
+        if self:touchingPillar() then self.pos = utils.copy(oldPos) end
+      end
     end
- end
 
- --Resolve collision with pillar
- if self:touchingPillar() then
-    self.pos.y = self.pos.y - speed*request.vec.y
-    if self:touchingPillar() then
-      self.pos.y = self.pos.y + speed*request.vec.y
-      self.pos.x = self.pos.x - speed*request.vec.x
-      if self:touchingPillar() then self.pos = utils.copy(oldPos) end
-    end
+    self.lastR = request.vec:getDir()+math.pi/2
+    server.updateClientData(self)
   end
-
-  self.lastR = request.vec:getDir()+math.pi/2
-  server.updateClientData(self)
 end
 
-function Player:useAbility(name,request)
-  if not self.dead then
-    if name=='waterSpray' then
-      for i=-5,5 do game.createObject('bullet',{vel=request.dir:rotate(i/10)*200,pos=self.pos,ownerID=request.id,height=self.height}) end
+function Player:triggerAbility(name,request)
+  if not self.dead then --todo: check if enough mana as well
+    local ability = abilities[name]
+    if ability then
+      if request.press then
+        local holdData = {}
+        ability:pressed(self,request,holdData)
+        if ability.castMode=='hold' then
+          server.request({abilityName=name},'addReleaseListener',self.clientID) --request the client to listen for the key's release
+          self.heldAbilities = self.heldAbilities or {}
+          holdData.name = name
+          holdData.pressRequest = request
+          table.insert(self.heldAbilities,holdData) --save to held abilities, saving the original request data
+        end
+      else
+        ability:released(self,request)
+        for i=1,#self.heldAbilities do --remove ability from held abilities
+          if self.heldAbilities[i].name==name then
+            table.remove(self.heldAbilities,i)
+            break
+          end
+        end
+      end
     end
-    if name=='bubble' then game.createObject('bullet',{vel=request.dir*200,pos=self.pos,ownerID=request.id,height=self.height}) end
+  end
+end
+function Player:update()
+  if self.heldAbilities then
+    for i=1,#self.heldAbilities do
+      local holdData = self.heldAbilities[i]
+      abilities[holdData.name]:held(self,holdData)
+    end
   end
 end
 
