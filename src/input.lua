@@ -17,9 +17,8 @@ function input.update(dt)
             moveDir = moveDir+v
         end
     end
-    if moveDir~=Vec() and input.send.moveKeys then
-        client.request({vec=moveDir,id=client.playerID},'movePlayer')
-    end
+    if moveDir~=Vec() and input.send.moveKeys then client.request({vec=moveDir,id=client.playerID},'move') end
+    if input.send.mousePos then client.request({vec=Vec(mouseX,mouseY),id=client.playerID},'mouseMoved') end
 end
 
 function input.abilityTriggered(abilityName,press) --press=true if on press; false if on release

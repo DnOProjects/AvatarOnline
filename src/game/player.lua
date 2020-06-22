@@ -33,6 +33,16 @@ function Player:move(request)
   server.updateClientData(self)
 end
 
+function Player:triggerAbilityMouseMoves(newPos)
+  if self.heldAbilities then
+    for i=1,#self.heldAbilities do
+      local holdData = self.heldAbilities[i]
+      local ability = abilities[holdData.name]
+      if ability.mouseMovedWhileHeld then ability:mouseMovedWhileHeld(self,holdData,newPos) end
+    end
+  end
+end
+
 function Player:triggerAbility(name,request)
   if not self.dead then --todo: check if enough mana as well
     local ability = abilities[name]

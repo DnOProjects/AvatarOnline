@@ -65,7 +65,8 @@ function server.handleRequest(client,request)
   if request.id then player = Objects[request.id] end
 
   if request.type == 'respawn' then player:respawn()
-  elseif request.type=='movePlayer' then player:move(request)
+  elseif request.type=='move' then player:move(request)
+  elseif request.type=='mouseMoved' then player:triggerAbilityMouseMoves(request.vec) 
   elseif request.type=='triggerAbility' then player:triggerAbility(request.name,request) end
 end
 function server.handleConnect(client)
