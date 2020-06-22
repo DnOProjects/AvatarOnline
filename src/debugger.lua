@@ -34,6 +34,8 @@ function debugger.logClient(server,client)
     logVal('    '..tostring(k),text)
   end
   logVal('  ping',tostring(ping)..' ms',grade(ping,20,80))
+  logVal('  sent',tostring(client.sent)..' request(s)/frame',grade(client.sent,0,3))
+  logVal('  recieved',tostring(client.recieved)..' request(s)/frame',grade(client.recieved,0,7))
 end
 function debugger.draw()
   for i,v in ipairs(log) do

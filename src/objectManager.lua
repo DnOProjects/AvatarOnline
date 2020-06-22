@@ -14,7 +14,7 @@ function objMan.addObject(object,append) --append is an optional arguement, prev
 end
 function objMan.removeObject(id) Objects[id].trash = true end
 function objMan.clearTrash()
-for i=#Objects,1,-1 do
+  for i=#Objects,1,-1 do
     if Objects[i].trash then table.remove(Objects,i)
     else break end
   end

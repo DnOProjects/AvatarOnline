@@ -107,6 +107,8 @@ function server.removeObject(id)
   if objects[id] then
     objMan.removeObject(id)
     server.request({id=id},'removeObj')
+  else
+    error('Object did not exist to remove')
   end
 end
 --Specific request functions

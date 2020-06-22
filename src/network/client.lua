@@ -5,7 +5,9 @@ local client = {
   requestedConnection = false,
   connected = false,
   playerID = nil, --unique id of the client's player game object
-  abilitiesWaitingToRelease = {} --list of abilityies that the server would like to be notified about if their button is released
+  --Stats for debug:
+  sent = 0,
+  recieved = 0
 }
 local server --bound peer object that it is connected to
 local objects = {} --client-side objects list to draw graphics, interpret inputs and provide instant feedback with
@@ -26,6 +28,7 @@ function client.connect(address)
   server = client.host:connect(address)
 end
 function client.update(dt) --Called before main game updates
+  client.sent, client.recieved = 0,0 --reset stats
   requests = {} --clear requests
   Objects = objects
   Grid = grid
@@ -67,10 +70,12 @@ function client.draw()
   ui.draw()
 end
 function client.request(request,requestType)
+  client.sent = client.sent + 1
   if requestType then request.type = requestType end
   table.insert(requests,request)
 end
 function client.handleRequest(from,request) --requests are recieved from the server and each have a type
+  client.recieved = client.recieved + 1
   --local variables populated for convenience
   local object
   if request.id then object = objects[request.id] end
@@ -82,12 +87,13 @@ function client.handleRequest(from,request) --requests are recieved from the ser
   elseif request.type=='addObj' then
     if request.object.path and server:round_trip_time()<200 then request.object.path.time = server:round_trip_time()/2000 end
     objMan.addObject(request.object,request.append)
-  elseif request.type=='removeObj' then objMan.removeObject(request.id)
+  elseif request.type=='removeObj' then
+    objMan.removeObject(request.id)
   elseif request.type=='setTile' then map.setTile(request.pos,request.tile)
   elseif request.type=='changeObj' then
     objects[request.id] = request.data
     objects[request.id].id = request.id --restore lost id
-  elseif request.type=='addReleaseListener' then table.insert(client.abilitiesWaitingToRelease,request.abilityName) end
+  elseif request.type=='setInputFlag' then input.send[request.flag] = request.value end
 end
 
 return client

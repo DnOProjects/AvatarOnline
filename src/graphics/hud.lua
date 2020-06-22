@@ -21,7 +21,7 @@ local function meter(p,pos,size,col,args)
   Col(1,1,1):use()
 end
 
-local itemSize = Vec(200,50)
+local itemSize = Vec(150,150)
 local function drawMenu(menu,pos)
   local pos = pos or menu.pos
   for i=1,#menu.items do
@@ -51,7 +51,7 @@ local function updateMenu(menu,pos)
   end
 end
 
-local selectionMenu = {pos = Vec(400,400), items={
+local selectionMenu = {pos = Vec(200,200), items={
   {name="attack",items={
     {name="water", items={{name="bubble"}, {name="waterSpray"}, {name="Ice shards"}}},
     {name="earth",items={{name="Bullets"}, {name="Pebbles"}, {name="Idk im running out of fake names"}}},

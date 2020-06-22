@@ -21,9 +21,8 @@ newAbility('bubble',{pressed = function(self,caster,request)
 end})
 newAbility('charge',{castMode = 'hold',
 pressed = function(self,caster,request,holdData)
-  caster.immobile = true
+  server.request({flag='moveKeys',value=false},'setInputFlag',self.clientID)
   holdData.timer = 0
-  game.createObject('bullet',{vel=request.dir*200,pos=caster.pos,ownerID=request.id,height=caster.height})
 end,
 held = function(self,caster,holdData)
   holdData.timer = holdData.timer + 1
@@ -34,7 +33,7 @@ held = function(self,caster,holdData)
   end
 end,
 released = function(self,caster,request)
-  caster.immobile = false
+  server.request({flag='moveKeys',value=true},'setInputFlag',self.clientID)
 end
 })
 

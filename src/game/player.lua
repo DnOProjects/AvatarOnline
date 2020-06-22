@@ -5,34 +5,32 @@ local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,dead=fals
 end})
 
 function Player:move(request)
-  if not self.immobile then
-    local speed, oldPos, oldHeight, sliding = 5, utils.copy(self.pos), self.height, false
-    self.pos = self.pos+request.vec*speed
+  local speed, oldPos, oldHeight, sliding = 5, utils.copy(self.pos), self.height, false
+  self.pos = self.pos+request.vec*speed
 
-    --Test for collision with screen boundries
-    local p = self.pos + VecSquare(CliffWidth)*self.height
-    if p.x+self.hitR>1920 or p.x-self.hitR<0 or p.y+self.hitR>1080 or p.y-self.hitR<0 then self.pos = utils.copy(oldPos) end
+  --Test for collision with screen boundries
+  local p = self.pos + VecSquare(CliffWidth)*self.height
+  if p.x+self.hitR>1920 or p.x-self.hitR<0 or p.y+self.hitR>1080 or p.y-self.hitR<0 then self.pos = utils.copy(oldPos) end
 
-    for i=1,2 do
-      if not self:onGround() then
-        self.height = self.height - 1
-        self.pos = self.pos + VecSquare(CliffWidth)
-      end
-   end
-
-   --Resolve collision with pillar
-   if self:touchingPillar() then
-      self.pos.y = self.pos.y - speed*request.vec.y
-      if self:touchingPillar() then
-        self.pos.y = self.pos.y + speed*request.vec.y
-        self.pos.x = self.pos.x - speed*request.vec.x
-        if self:touchingPillar() then self.pos = utils.copy(oldPos) end
-      end
+  for i=1,2 do
+    if not self:onGround() then
+      self.height = self.height - 1
+      self.pos = self.pos + VecSquare(CliffWidth)
     end
+ end
 
-    self.lastR = request.vec:getDir()+math.pi/2
-    server.updateClientData(self)
+ --Resolve collision with pillar
+ if self:touchingPillar() then
+    self.pos.y = self.pos.y - speed*request.vec.y
+    if self:touchingPillar() then
+      self.pos.y = self.pos.y + speed*request.vec.y
+      self.pos.x = self.pos.x - speed*request.vec.x
+      if self:touchingPillar() then self.pos = utils.copy(oldPos) end
+    end
   end
+
+  self.lastR = request.vec:getDir()+math.pi/2
+  server.updateClientData(self)
 end
 
 function Player:triggerAbility(name,request)
@@ -43,7 +41,8 @@ function Player:triggerAbility(name,request)
         local holdData = {}
         ability:pressed(self,request,holdData)
         if ability.castMode=='hold' then
-          server.request({abilityName=name},'addReleaseListener',self.clientID) --request the client to listen for the key's release
+          server.request({flag='releases',value=true},'setInputFlag',self.clientID) --request the client to listen for the key's release
+          server.request({flag='presses',value=false},'setInputFlag',self.clientID) --deny any more presses until ability ceases
           self.heldAbilities = self.heldAbilities or {}
           holdData.name = name
           holdData.pressRequest = request
@@ -51,6 +50,8 @@ function Player:triggerAbility(name,request)
         end
       else
         ability:released(self,request)
+        server.request({flag='releases',value=false},'setInputFlag',self.clientID) --stop listening for releases
+        server.request({flag='presses',value=true},'setInputFlag',self.clientID) --allow more presses
         for i=1,#self.heldAbilities do --remove ability from held abilities
           if self.heldAbilities[i].name==name then
             table.remove(self.heldAbilities,i)
