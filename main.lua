@@ -13,7 +13,7 @@ assets = require 'src/assets'
 debugger, input, objMan, utils = require 'src/debugger', require 'src/input', require 'src/objectManager', require 'src/utils'
 graphics, scale, hud, ui, shaderMan, map = require 'src/graphics/graphics', require 'src/graphics/scale', require 'src/graphics/hud', require 'src/graphics/ui', require 'src/graphics/shaderMan', require 'src/graphics/map'
 client, server, bitser, net = require 'src/network/client', require 'src/network/server', require 'src/network/bitser', require 'src/network/net'
-Object, Player, Ability = require 'src/game/object', require 'src/game/player', require 'src/game/ability'
+Object, Ability = require 'src/game/object', require 'src/game/ability'
 game = require 'src/game/game'
 --Global variables
 Objects = 'unbound' --a reference to the active node's objects list
@@ -51,13 +51,4 @@ function love.draw()
   	debugger.draw()
 
 	scale.drawEnd()
-
-	local a,b,p = Vec(500,500), Vec(700,800), VecMouse()
-	a:drawPos()
-	b:drawPos()
-	local ab = b-a
-	ab:drawDir(a)
-	Col(1,1,1,0.5):use()
-	p:drawPos(p:distanceToLine(a,b))
-	Col(1,1,1):use()
 end

@@ -21,7 +21,7 @@ newAbility('bubble',{pressed = function(self,caster,request)
   game.createObject('bubble',{vel=request.dir*200,pos=caster.pos,ownerID=request.id,height=caster.height})
 end})
 newAbility('Laser',{pressed = function(self,caster,request)
-  game.createObject('laser',{dir=request.dir,pos=caster.pos+request.dir*100,ownerID=request.id,height=caster.height})
+  game.createObject('laser',{dir=request.dir,pos=caster.pos+request.dir*100,length=10000,ownerID=request.id,height=caster.height})
 end})
 newAbility('charge',{castMode = 'hold',
 pressed = function(self,caster,request,holdData)
