@@ -1,4 +1,4 @@
-local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,dead=false,lastR=0,clientID=nil,
+local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,dead=false,lastR=0,clientID=nil,removeOOB=false,
 getDrawData=function(self)
   return {pos=self.pos,img='katara',r=self.lastR,dead=self.dead,hpP=self.hp/self.maxHp,h=self.height}
 end})
@@ -50,27 +50,37 @@ function Player:triggerAbility(name,request)
         local holdData = {}
         ability:pressed(self,request,holdData)
         if ability.castMode=='hold' then
-          server.request({flag='releases',value=true},'setInputFlag',self.clientID) --request the client to listen for the key's release
-          server.request({flag='presses',value=false},'setInputFlag',self.clientID) --deny any more presses until ability ceases
+          self:setInputFlags('releases',true) --request the client to listen for the key's release
           self.heldAbilities = self.heldAbilities or {}
           holdData.name = name
           holdData.pressRequest = request
           table.insert(self.heldAbilities,holdData) --save to held abilities, saving the original request data
         end
       else
-        ability:released(self,request)
-        server.request({flag='releases',value=false},'setInputFlag',self.clientID) --stop listening for releases
-        server.request({flag='presses',value=true},'setInputFlag',self.clientID) --allow more presses
-        for i=1,#self.heldAbilities do --remove ability from held abilities
-          if self.heldAbilities[i].name==name then
-            table.remove(self.heldAbilities,i)
-            break
+        local holdData = nil
+        for i=1,#self.heldAbilities do
+          if self.heldAbilities[i].name==name then holdData=self.heldAbilities[i] end
+        end
+        if holdData~=nil then
+          ability:released(self,request,holdData)
+            self:setInputFlags('releases',false) --stop listening for releases
+          for i=1,#self.heldAbilities do --remove ability from held abilities
+            if self.heldAbilities[i].name==name then
+              table.remove(self.heldAbilities,i)
+              break
+            end
           end
         end
       end
     end
   end
 end
+function Player:setInputFlags(...)
+  local args = {...}
+  if #args%2==1 then error('Player:setInputFlags() takes arguements in form: flagname1,value1,flagname2,value2...') end
+  for i=1,#args,2 do server.request({flag=args[i],value=args[i+1]},'setInputFlag',self.clientID) end
+end
+
 function Player:update()
   if self.heldAbilities then
     for i=1,#self.heldAbilities do

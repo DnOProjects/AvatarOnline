@@ -1,11 +1,10 @@
-return Object:new('laser',
+local Laser = Object:new('laser',
   {bullet=true,
   hitR=25,
   vel=Vec(),
   ownerID=nil,
-  initialise = function(self,request)
-    self.hitEnd = self.pos + request.dir*request.length
-  end,
+  removeOOB=false,
+  initialise = function(self,request) self:newEnd(request.dir,request.length) end,
   onTouches=function(self,object)
     if object.player and self.ownerID~=object.id then object:damage(5) end
   end,
@@ -14,3 +13,9 @@ return Object:new('laser',
   end
   }
 )
+
+function Laser:newEnd(dir,length)
+  self.hitEnd = self.pos + dir*length
+end
+
+return Laser

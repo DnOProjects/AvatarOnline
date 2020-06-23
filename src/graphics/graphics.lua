@@ -24,7 +24,6 @@ function graphics.draw()
           shaderMan.light(graphics.objPos(obj),{col=col,intensity=intensity,spread=spread,type=type,dir=dir,length=length,endPos=endPos})
         end
       end
-      shaderMan.light(Vec(500,500),{col=ColRand(),intensity=3,spread=math.random(1,20),type='line',dir=math.pi*(math.sin(love.timer.getTime())+1),length=10000})
       shaderMan.send() --must be called after all calls to shaderMan.light
     end
 

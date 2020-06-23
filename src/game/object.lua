@@ -2,6 +2,7 @@ local Object = Class:new('object',{
 
   pos=Vec(),
   height = 1, --height from -1 to 1
+  removeOOB = true, --removes if collides with hill/goes off-screen
 
   hitEnd=nil, --if nil, hitbox is considered as a cicle; if as Vector, hitbox considered as the locus, radius hitR, of the line segment from pos -> hitEnd
   hitR=0 --radius in px. when drawn without any scaling for the hitcircle (hitbox but circular)
@@ -21,6 +22,8 @@ function Object:create(request) --generic create function that calls the more sp
   object.height = request.height or 1
   return object
 end
+function Object:remove() server.removeObject(self.id) end
+
 function Object:getClientData()
   local data = self:getDrawData()
   data.trash = self.trash --include trash
@@ -31,7 +34,7 @@ function Object:touching(object)
     if object.hitEnd then return false end --line - line collisions not currently supported
     return object.pos:distanceToLine(self.pos,self.hitEnd) < (object.hitR+self.hitR)
   end
-  if object.hitEnd then return self.pos:distanceToLine(object.pos,object.hitEnd) < (object.hitR+self.hitR) end 
+  if object.hitEnd then return self.pos:distanceToLine(object.pos,object.hitEnd) < (object.hitR+self.hitR) end
   return self.pos..object.pos < (object.hitR+self.hitR)
 end
 function Object:updateTouches()

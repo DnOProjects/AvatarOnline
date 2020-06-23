@@ -5,7 +5,7 @@ local Ability = Class:new('ability',{
   -- hold = pressed() called when button moved down, held() called every frame button is down for, released() called when button released
   pressed = function(self,caster,request,holdData) end, --caster = player object that cast the ability, request = mic. info passed by client, holdData = optional table to fill with data to save for held abilities
   held = function(self,caster,pressRequest,holdData) end, --pressRequest = request originally used to trigger its press
-  released = function(self,caster,request) end,
+  released = function(self,caster,request,holdData) end,
   mouseMovedWhileHeld = function(self,caster,holdData,newPos) end --called if a mouse-moved packet is recieved while the ability is being held
 })
 local function newAbility(name,args)
@@ -23,9 +23,26 @@ end})
 newAbility('Laser',{pressed = function(self,caster,request)
   game.createObject('laser',{dir=request.dir,pos=caster.pos+request.dir*100,length=10000,ownerID=request.id,height=caster.height})
 end})
+
+newAbility('Laser',{castMode = 'hold',
+pressed = function(self,caster,request,holdData)
+  caster:setInputFlags('mousePos',true,'moveKeys',false)
+  local laser = game.createObject('laser',{dir=request.dir,pos=caster.pos+request.dir*100,length=10000,ownerID=request.id,height=caster.height})
+  holdData.laser = laser --save a reference to the created object
+end,
+mouseMovedWhileHeld = function(self,caster,holdData,newPos)
+  holdData.laser:newEnd((newPos-holdData.laser.pos):setMag(1),10000)
+  server.updateClientData(holdData.laser)
+end,
+released = function(self,caster,request,holdData)
+  caster:setInputFlags('mousePos',false,'moveKeys',true)
+  holdData.laser:remove()
+end
+})
+
 newAbility('charge',{castMode = 'hold',
 pressed = function(self,caster,request,holdData)
-  server.request({flag='mousePos',value=true},'setInputFlag',self.clientID)
+  caster:setInputFlags('mousePos',true)
   holdData.timer = 0
 end,
 held = function(self,caster,holdData)
@@ -38,7 +55,7 @@ held = function(self,caster,holdData)
   end
 end,
 released = function(self,caster,request)
-  server.request({flag='mousePos',value=false},'setInputFlag',self.clientID)
+  caster:setInputFlags('mousePos',false)
 end,
 mouseMovedWhileHeld = function(self,caster,holdData,newPos)
   holdData.dir = (newPos-caster.pos):setMag(1)
