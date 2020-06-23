@@ -9,8 +9,8 @@ function graphics.draw()
     --Send light info to the shader (temp atm)
     if (enableShaders == true) then
       for i,obj in ipairs(Objects) do
-        if not obj.trash and obj.path and obj.h>=h then
-          shaderMan.light(graphics.pathPos(obj.path),{col=Col(1,1,1),intensity=0.5,spread=100})
+        if obj.light and not obj.trash and obj.path and obj.h>=h  then
+          shaderMan.light(graphics.pathPos(obj.path),obj.light)
         end
       end
       shaderMan.light(Vec(500,500),{col=ColRand(),intensity=3,spread=math.random(1,20),type='line',dir=math.pi*(math.sin(love.timer.getTime())+1),length=10000})

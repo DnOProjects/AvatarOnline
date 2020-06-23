@@ -46,6 +46,19 @@ function utils.copy(x)
     return copy
 end
 
+function utils.listsEqual(a,b) --UNTESTED!
+  if type(a)~='table' or type(b)~='table' then return false end
+  for k,v in pairs(a) do
+    if type(v)=='table' then
+      if not utils.listsEqual(b[k],v) then return false end
+    elseif b[k]~=v then return false end
+  end
+  for k,v in pairs(b) do
+    if a[k]~=v then return false end
+  end
+  return true
+end
+
 function utils.degreesToRadians(degrees)
     return degrees * (math.pi/180)
 end

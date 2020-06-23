@@ -14,28 +14,28 @@ local i=0
 function debugger.update(dt)  --clear log before frame starts
   log = {}
   local fps = love.timer.getFPS()
-  logVal('  FPS',fps,grade(fps,60,20))
+  logVal('FPS',fps,grade(fps,60,20))
 end
 function debugger.logServer(server)
   logVal('Server')
-  logVal('  #Objects',#Objects)
+  logVal('    #Objects',#Objects)
 end
 function debugger.logClient(server,client)
   logVal('Client')
   i=i+0.5
   local ping = server:round_trip_time()
-  logVal('  #Objects',#Objects)
-  logVal('  playerID',client.playerID)
-  logVal('  player')
+  logVal('    ping',tostring(ping)..' ms',grade(ping,20,80))
+  logVal('    #Objects',#Objects)
+  logVal('    playerID',client.playerID)
+  logVal('    player')
   for k,v in pairs(client.player) do
     local text
     if type(v)=="table" and v.getText then text = v:getText()
     else text = tostring(v) end
-    logVal('    '..tostring(k),text)
+    logVal('      '..tostring(k),text)
   end
-  logVal('  ping',tostring(ping)..' ms',grade(ping,20,80))
-  logVal('  sent',tostring(client.sent)..' request(s)/frame',grade(client.sent,0,3))
-  logVal('  recieved',tostring(client.recieved)..' request(s)/frame',grade(client.recieved,0,7))
+  logVal('    sent',tostring(client.sent)..' request(s)/frame',grade(client.sent,0,3))
+  logVal('    recieved',tostring(client.recieved)..' request(s)/frame',grade(client.recieved,0,7))
 end
 function debugger.draw()
   for i,v in ipairs(log) do

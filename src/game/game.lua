@@ -1,12 +1,11 @@
-local game = {}
+--Automatically require all objects into a list
+local objectClasses = {}
+for i,file in ipairs(love.filesystem.getDirectoryItems('src/game/objects')) do
+  local name = string.match(file,'%a+') --removes the .lua from the filename
+  objectClasses[name] = require ('src/game/objects/'..name)
+end
 
-local Bullet = Object:new('bullet',{bullet=true,hitR=12,vel=Vec(),ownerID=nil,
-onTouches=function(self,object)
-  if object.player and self.ownerID~=object.id then object:damage(5) end
-end,
-getDrawData=function(self)
-  return {path={start=self.pos,vel=self.vel,time=0},img='water',h=self.height}
-end})
+local game = {}
 
 function game.update(dt)
     for i, object in ipairs(Objects) do
@@ -23,8 +22,9 @@ end
 
 function game.createObject(objectType,request)
     local object
+    --Special case creations
     if objectType == 'player' then object = Player:obj({clientID=request.clientID}) end
-    if objectType == 'bullet' then object = Bullet:obj({vel=request.vel,ownerID=request.ownerID}) end
+    if objectType == 'bubble' then object = objectClasses.bubble:obj({vel=request.vel,ownerID=request.ownerID}) end
     object.pos = request.pos or Vec()
     object.height=request.height or 1
     server.addObject(object)

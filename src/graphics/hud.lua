@@ -27,8 +27,8 @@ local function drawMenu(menu,pos)
   for i=1,#menu.items do
     local item, itemPos = menu.items[i], pos + Vec(0,(i-1)*itemSize.y)
     if item.selected and item.items then drawMenu(item,itemPos+Vec(itemSize.x,0)) end
-    Col(0.2):use()
-    if item.selected then Col(0.3):use() end
+    Col(0.2):setA(0.8):use()
+    if item.selected then Col(0.3):setA(0.8):use() end
     love.graphics.rectangle("fill", itemPos.x, itemPos.y, itemSize.x, itemSize.y)
     Col(1):use()
     love.graphics.rectangle("line", itemPos.x, itemPos.y, itemSize.x, itemSize.y)
@@ -40,14 +40,15 @@ local function drawMenu(menu,pos)
     love.graphics.print(name,itemPos.x,itemPos.y)
   end
 end
-local function updateMenu(menu,pos)
+local function updateMenu(menu,pos,parentSelected)
   local pos = pos or menu.pos
+  if parentSelected==nil then parentSelected = true end
   local m = VecMouse()
   for i=1,#menu.items do
     local item, itemPos = menu.items[i], pos + Vec(0,(i-1)*itemSize.y)
-    if item.items then updateMenu(item,itemPos+Vec(itemSize.x,0)) end
     local inCollumn, inRow = m.x>=pos.x and m.x<=pos.x+itemSize.x, m.y>=itemPos.y and m.y<=itemPos.y+itemSize.y
-    item.selected = (item.selected and m.x>=pos.x+itemSize.x) or (inCollumn and inRow)
+    item.selected = parentSelected and ((item.items and item.selected and m.x>=pos.x+itemSize.x) or (inCollumn and inRow))
+    if item.items then updateMenu(item,itemPos+Vec(itemSize.x,0),item.selected) end
   end
 end
 
@@ -89,17 +90,35 @@ function hud.update()
   if currentPage=="switchMove" then updateMenu(selectionMenu) end
 end
 
-function hud.handleInputEvent(event)
+local function bindsMatch(a,b) return a.key==b.key and a.button==b.button end
+local function eventBound(event)
   for i=1,#selectionMenu.items do
     for j=1,#selectionMenu.items[i].items do
       for k=1,#selectionMenu.items[i].items[j].items do
         local item = selectionMenu.items[i].items[j].items[k]
-        if not item.triggerEvent then item.triggerEvent = true end
-        if currentPage=="switchMove" and item.selected then
-          item.triggerEvent = event
-        elseif item.triggerEvent~=true and event.key==item.triggerEvent.key and event.button==item.triggerEvent.button then
-          if event.type == 'mouserelease' then input.abilityTriggered(item.name,false)
-          else input.abilityTriggered(item.name,true) end
+        if item.triggerEvent and item.triggerEvent~=true and bindsMatch(item.triggerEvent,event) then return true end
+      end
+    end
+  end
+  return false
+end
+function hud.handleInputEvent(event) --Allows for setting key bindings and for linking a keypress to a specific move being triggered
+  if not(event.key and utils.inList(event.key,{'w','a','s','d'})) then --dont allow wasd keybindings
+    local bound = eventBound(event)
+    for i=1,#selectionMenu.items do
+      for j=1,#selectionMenu.items[i].items do
+        for k=1,#selectionMenu.items[i].items[j].items do
+          local item = selectionMenu.items[i].items[j].items[k]
+          if not item.triggerEvent then item.triggerEvent = true end
+          if currentPage=="switchMove" and item.selected then
+            if event.type == 'press' then
+              if item.triggerEvent~=true and bindsMatch(event,item.triggerEvent) then item.triggerEvent=true --clear keybind
+              elseif not bound then --set keybinding
+                if item.triggerEvent~=true then input.abilityTriggered(item.name,'release') end --behave as though the key were released to stop abilities never being cancelled
+                item.triggerEvent = event
+              end
+            end
+          elseif item.triggerEvent~=true and bindsMatch(event,item.triggerEvent) then input.abilityTriggered(item.name,event.type) end --trigger ability request
         end
       end
     end
