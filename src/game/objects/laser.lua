@@ -4,7 +4,14 @@ local Laser = Object:new('laser',
   vel=Vec(),
   ownerID=nil,
   removeOOB=false,
-  initialise = function(self,request) self:newEnd(request.dir,request.length) end,
+
+  dir, length = 0,1,
+
+  onCreate=function(self,request)
+    self:setDir(request.dir)
+    self:setLength(request.length)
+    self:updateEnd()
+  end,
   onTouches=function(self,object)
     if object.player and self.ownerID~=object.id then object:damage(5) end
   end,
@@ -14,8 +21,17 @@ local Laser = Object:new('laser',
   }
 )
 
-function Laser:newEnd(dir,length)
-  self.hitEnd = self.pos + dir*length
+function Laser:updateEnd()
+  self.hitEnd = self.pos + self.dir*self.length
+  server.updateClientData(self)
+end
+function Laser:setDir(dir)
+  self.dir = dir:setMag(1)
+  self:updateEnd()
+end
+function Laser:setLength(length)
+  self.length = length
+  self:updateEnd()
 end
 
 return Laser

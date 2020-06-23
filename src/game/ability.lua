@@ -31,8 +31,8 @@ pressed = function(self,caster,request,holdData)
   holdData.laser = laser --save a reference to the created object
 end,
 mouseMovedWhileHeld = function(self,caster,holdData,newPos)
-  holdData.laser:newEnd((newPos-holdData.laser.pos):setMag(1),10000)
-  server.updateClientData(holdData.laser)
+  local dirChange = (newPos-holdData.laser.pos):setMag(0.1)
+  holdData.laser:setDir(holdData.laser.dir+dirChange)
 end,
 released = function(self,caster,request,holdData)
   caster:setInputFlags('mousePos',false,'moveKeys',true)
