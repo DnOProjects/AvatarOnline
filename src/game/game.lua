@@ -25,6 +25,7 @@ function game.createObject(objectType,request)
     --Special case creations
     if objectType == 'player' then object = Player:obj({clientID=request.clientID}) end
     if objectType == 'bubble' then object = objectClasses.bubble:obj({vel=request.vel,ownerID=request.ownerID}) end
+    if objectType == 'laser' then object = objectClasses.laser:obj({dir=request.dir,ownerID=request.ownerID}) end
     object.pos = request.pos or Vec()
     object.height=request.height or 1
     server.addObject(object)

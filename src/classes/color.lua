@@ -32,3 +32,4 @@ end
 function Color.mix(a,b,r)
 	return Col(b.r+(a.r-b.r)*r,b.g+(a.g-b.g)*r,b.b+(a.b-b.b)*r,b.a+(a.a-b.a)*r)
 end
+function Color:overBrighten(x) return Col(self.r+x,self.g+x,self.b+x,self.a) end

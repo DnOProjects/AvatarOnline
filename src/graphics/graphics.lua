@@ -1,6 +1,10 @@
 local graphics = {}
 
 function graphics.pathPos(path) return path.start + path.vel*path.time end
+function graphics.objPos(object)
+  if object.path then return graphics.pathPos(object.path) end
+  if object.pos then return object.pos end
+end
 
 function graphics.draw()
   love.graphics.setShader(Shader)
@@ -9,8 +13,15 @@ function graphics.draw()
     --Send light info to the shader (temp atm)
     if (enableShaders == true) then
       for i,obj in ipairs(Objects) do
-        if obj.light and not obj.trash and obj.path and obj.h>=h  then
-          shaderMan.light(graphics.pathPos(obj.path),obj.light)
+        if obj.light and not obj.trash and obj.h>=h  then
+          local intensity,spread,type,dir,length,col = obj.light.intensity or 1, obj.light.spread or 50, 'point', obj.light.dir, obj.light.length, obj.light.col
+          if obj.light.length then type='line' end
+          if obj.light.flash then --flash is a percentage
+            local a,b = (1-obj.light.flash)*50, 100-(1-obj.light.flash)*50
+            spread = math.random(a,b)/100*spread
+            col = col:overBrighten(math.random(0,obj.light.flash*100)/100)
+          end
+          shaderMan.light(graphics.objPos(obj),{col=col,intensity=intensity,spread=spread,type=type,dir=dir,length=length})
         end
       end
       shaderMan.light(Vec(500,500),{col=ColRand(),intensity=3,spread=math.random(1,20),type='line',dir=math.pi*(math.sin(love.timer.getTime())+1),length=10000})
@@ -22,7 +33,7 @@ function graphics.draw()
 
     --Draw object shadow
     for i,obj in ipairs(Objects) do
-      if (not obj.trash) and (not obj.dead) and obj.h==h then
+      if (not obj.trash) and (not obj.dead) and obj.h==h and obj.img then
         local pos
         --Find pos
         if obj.pos then pos = obj.pos end
@@ -46,7 +57,7 @@ function graphics.draw()
 
     --Draw objects
     for i,obj in ipairs(Objects) do
-      if (not obj.trash) and (not obj.dead) and obj.h==h then
+      if (not obj.trash) and (not obj.dead) and obj.h==h and obj.img then
         local pos
         --Find pos
         if obj.pos then pos = obj.pos end
