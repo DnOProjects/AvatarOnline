@@ -51,4 +51,13 @@ function love.draw()
   	debugger.draw()
 
 	scale.drawEnd()
+
+	local a,b,p = Vec(500,500), Vec(700,800), VecMouse()
+	a:drawPos()
+	b:drawPos()
+	local ab = b-a
+	ab:drawDir(a)
+	Col(1,1,1,0.5):use()
+	p:drawPos(p:distanceToLine(a,b))
+	Col(1,1,1):use()
 end

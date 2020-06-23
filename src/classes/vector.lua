@@ -35,7 +35,31 @@ function Vector:rotate(x) return self:setDir(self:getDir()+x) end
 function Vector:getText() return 'x: '..self.x..', y: '..self.y end
 function Vector:floor() return Vec(math.floor(self.x),math.floor(self.y)) end
 function Vector:rotate(x) return self:setDir(self:getDir()+x) end
+function Vector:drawPos(size) love.graphics.circle("fill",self.x,self.y,size or 5) end
+function Vector:drawDir(pos)
+	pos:drawPos()
+	local stop = pos+self
+	love.graphics.line(pos.x,pos.y,stop.x,stop.y)
+	local arrowSize = 20
+	local normal, tangent = self:setMag(-arrowSize), Vec(-self.y,self.x):setMag(arrowSize/2)
+	local a,b,c = stop, stop+normal+tangent, stop+normal-tangent
+	love.graphics.polygon("fill",a.x,a.y,b.x,b.y,c.x,c.y)
+end
+function Vector:dot(other) return self.x*other.x + self.y*other.y end
+function Vector:angleAt(a,c) --returns the angle between points A,B&C where B is self
+	local ba, bc = a-self, c-self
+	return math.acos(ba:dot(bc)/(ba:getMag()*bc:getMag()))
+end
 function Vector:cardinalise()
 	if self.y>self.x then return Vec(0,self.y) end
 	return Vec(self.x,0)
+end
+function Vector:distanceToLine(a,b) -- line segment a-b (copied fctn from web), self is notated p
+	--Edge cases where circle centered on the point p that just touches the line is not tangential
+	if b:angleAt(a,self)>math.pi/2 then return b..self end
+	if a:angleAt(b,self)>math.pi/2 then return a..self end
+
+	local ap, ab = self-a, b-a
+	local apMag, abMag = ap:getMag(), ab:getMag()
+	return apMag * math.sin(math.acos(ap:dot(ab)/(apMag*abMag)))
 end

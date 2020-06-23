@@ -14,14 +14,14 @@ function graphics.draw()
     if (enableShaders == true) then
       for i,obj in ipairs(Objects) do
         if obj.light and not obj.trash and obj.h>=h  then
-          local intensity,spread,type,dir,length,col = obj.light.intensity or 1, obj.light.spread or 50, 'point', obj.light.dir, obj.light.length, obj.light.col
-          if obj.light.length then type='line' end
+          local intensity,spread,type,dir,length,col, endPos = obj.light.intensity or 1, obj.light.spread or 50, 'point', obj.light.dir, obj.light.length, obj.light.col, obj.light.endPos
+          if obj.light.length or obj.light.endPos then type='line' end
           if obj.light.flash then --flash is a percentage
             local a,b = (1-obj.light.flash)*50, 100-(1-obj.light.flash)*50
             spread = math.random(a,b)/100*spread
-            col = col:overBrighten(math.random(0,obj.light.flash*100)/100)
+            col = col:overBrighten(math.random(0,obj.light.flash*100)/100):mix(ColRand(),0.8)
           end
-          shaderMan.light(graphics.objPos(obj),{col=col,intensity=intensity,spread=spread,type=type,dir=dir,length=length})
+          shaderMan.light(graphics.objPos(obj),{col=col,intensity=intensity,spread=spread,type=type,dir=dir,length=length,endPos=endPos})
         end
       end
       shaderMan.light(Vec(500,500),{col=ColRand(),intensity=3,spread=math.random(1,20),type='line',dir=math.pi*(math.sin(love.timer.getTime())+1),length=10000})
@@ -47,7 +47,7 @@ function graphics.draw()
             pos = pos + VecSquare(CliffWidth*heightDiff)
             local a, size = 0.4, 20
             if heightDiff==2 then a, size = 0.2, 30 end
-            Col(0,0,0,a):use()
+            Col(0.2,0.2,0.2,a):use()
             love.graphics.circle('fill',pos.x,pos.y,size)
           end
         end
