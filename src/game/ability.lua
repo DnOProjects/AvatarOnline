@@ -1,5 +1,6 @@
 abilities = {}
 local Ability = Class:new('ability',{
+  cost = 10,
   castMode = 'press', --Modes:
   -- press = pressed() called when button moved down
   -- hold = pressed() called when button moved down, held() called every frame button is down for, released() called when button released

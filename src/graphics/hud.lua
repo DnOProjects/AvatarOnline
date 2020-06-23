@@ -75,7 +75,7 @@ local selectionMenu = {pos = Vec(200,200), items={
 
 function hud.draw()
   meter(client.player.hpP,Vec(0,1030),Vec(600,50),Col(1,0,0))
-  meter(1,Vec(0,985),Vec(400,50),Col(0.2,0.64,0.95))
+  meter(client.player.manaP,Vec(0,985),Vec(400,50),Col(0.2,0.64,0.95))
 
   for i, obj in ipairs(Objects) do
     if obj.hpP and i~=client.playerID and (not obj.dead) then

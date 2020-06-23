@@ -1,6 +1,6 @@
-local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,dead=false,lastR=0,clientID=nil,removeOOB=false,
+local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,mana=0,maxMana=100,dead=false,lastR=0,clientID=nil,removeOOB=false,manaVisualUpdateTimer=0,
 getDrawData=function(self)
-  return {pos=self.pos,img='katara',r=self.lastR,dead=self.dead,hpP=self.hp/self.maxHp,h=self.height}
+  return {pos=self.pos,img='katara',r=self.lastR,dead=self.dead,hpP=self.hp/self.maxHp,manaP=self.mana/self.maxMana,h=self.height}
 end})
 
 function Player:move(request)
@@ -47,14 +47,18 @@ function Player:triggerAbility(name,request)
     local ability = abilities[name]
     if ability then
       if request.press then
-        local holdData = {}
-        ability:pressed(self,request,holdData)
-        if ability.castMode=='hold' then
-          self:setInputFlags('releases',true) --request the client to listen for the key's release
-          self.heldAbilities = self.heldAbilities or {}
-          holdData.name = name
-          holdData.pressRequest = request
-          table.insert(self.heldAbilities,holdData) --save to held abilities, saving the original request data
+        if self.mana>=ability.cost then
+          local holdData = {}
+          self.mana = self.mana - ability.cost
+          server.updateClientData(self)
+          ability:pressed(self,request,holdData)
+          if ability.castMode=='hold' then
+            self:setInputFlags('releases',true) --request the client to listen for the key's release
+            self.heldAbilities = self.heldAbilities or {}
+            holdData.name = name
+            holdData.pressRequest = request
+            table.insert(self.heldAbilities,holdData) --save to held abilities, saving the original request data
+          end
         end
       else
         local holdData = nil
@@ -81,7 +85,17 @@ function Player:setInputFlags(...)
   for i=1,#args,2 do server.request({flag=args[i],value=args[i+1]},'setInputFlag',self.clientID) end
 end
 
-function Player:update()
+function Player:update(dt)
+  if self.mana < self.maxMana then
+    self.mana = self.mana + dt*5
+    self.manaVisualUpdateTimer = self.manaVisualUpdateTimer + dt
+    if self.manaVisualUpdateTimer>1/4 then
+      server.updateClientData(self)
+      self.manaVisualUpdateTimer = 0
+    end
+  else
+    self.mana = self.maxMana
+  end
   if self.heldAbilities then
     for i=1,#self.heldAbilities do
       local holdData = self.heldAbilities[i]
@@ -90,7 +104,10 @@ function Player:update()
   end
 end
 
-function Player:onCreate() self:setHp(self.maxHp) end
+function Player:onCreate()
+  self.hp, self.mana = self.maxHp, self.maxMana
+  server.updateClientData(self)
+end
 function Player:setHp(x)
   self.hp = x
   if self.hp<0 then self.hp = 0 end
