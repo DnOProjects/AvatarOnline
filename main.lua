@@ -19,7 +19,7 @@ game = require 'src/game/game'
 Objects = 'unbound' --a reference to the active node's objects list
 Grid = 'unbound' --a reference to the active node's grid
 Shader = love.graphics.newShader("src/graphics/pixelshader.frag","src/graphics/vertexshader.vert")
-Hosting = false --True: runs a server and a client; False: runs just a client
+Hosting = true --True: runs a server and a client; False: runs just a client
 Ip = 'localhost'
 if not Hosting then
 	Ip = 'localhost'--'92.62.10.253'
@@ -31,7 +31,7 @@ DEBUG = {
 enableShaders = true
 
 function love.load()
-	love.window.setFullscreen(false)
+	love.window.setFullscreen(true)
 	client.load()
 end
 
