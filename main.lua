@@ -35,6 +35,7 @@ function love.load()
 	client.load()
 end
 
+
 function love.update(dt)
 	scale.update()
 	debugger.update(dt)

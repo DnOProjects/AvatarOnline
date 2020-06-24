@@ -16,7 +16,7 @@ function Vec(x,y)
 	local y = y or 0
 	return Vector:obj({x=x,y=y})
 end
-function VecMouse() return Vec(love.mouse.getX(),love.mouse.getY()) end
+function VecMouse() return Vec(love.mouse.getX(),love.mouse.getY())/gameRenderScale - Vec(xPadding,yPadding) end
 function VecSquare(x) return Vec(x,x) end
 function VecSize(object) return Vec(object:getWidth(),object:getHeight()) end
 function VecWin() return VecSize(love.graphics) end
