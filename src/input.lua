@@ -28,8 +28,8 @@ function input.abilityTriggered(abilityName,eventType) --press=true if on press;
    end
 end
 
-function love.mousepressed(x,y,button) hud.handleInputEvent({type='press',pos=Vec(mouseX,mouseY),button=button}) end
-function love.mousereleased(x, y, button) hud.handleInputEvent({type='release',pos=Vec(mouseX,mouseY),button=button}) end
+function love.mousepressed(x,y,button) hud.handleInputEvent({type='press',pos=Vec(x,y),button=button}) end
+function love.mousereleased(x, y, button) hud.handleInputEvent({type='release',pos=Vec(x,y),button=button}) end
 function love.keypressed(key) hud.handleInputEvent({type='press',key=key}) end
 function love.keyreleased(key) hud.handleInputEvent({type='release',key=key}) end
 
