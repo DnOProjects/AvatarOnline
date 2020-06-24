@@ -1,4 +1,4 @@
-local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,mana=0,maxMana=100,dead=false,lastR=0,clientID=nil,removeOOB=false,hudUpdateTimer=0,
+local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,mana=0,maxMana=100,dead=false,lastR=0,clientID=nil,removeOOB=false,hudUpdateTimer=0,heldAbilities={},
   hudUpdatePeriod = 0.2 --[[seconds before player hud is refreshed]], manaRegen = 2, --mana/sec
 getDrawData=function(self)
   return {pos=self.pos,img='katara',r=self.lastR,dead=self.dead,hpP=self.hp/self.maxHp,h=self.height}
@@ -53,7 +53,7 @@ function Player:triggerAbility(name,request)
           server.updateClientData(self)
           ability:pressed(self,request,holdData)
           if ability.castMode=='hold' then
-            self:setInputFlags('releases',true) --request the client to listen for the key's release
+            if #self.heldAbilities==0 then self:setInputFlags('releases',true)  end--request the client to listen for the key's release
             self.heldAbilities = self.heldAbilities or {}
             holdData.name = name
             holdData.pressRequest = request
@@ -69,13 +69,13 @@ function Player:triggerAbility(name,request)
         end
         if holdData~=nil then
           ability:released(self,request,holdData)
-            self:setInputFlags('releases',false) --stop listening for releases
           for i=1,#self.heldAbilities do --remove ability from held abilities
             if self.heldAbilities[i].name==name then
               table.remove(self.heldAbilities,i)
               break
             end
           end
+          if #self.heldAbilities==0 then self:setInputFlags('releases',false) end --stop listening for releases
         end
       end
     end
