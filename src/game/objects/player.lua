@@ -1,6 +1,7 @@
-local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,mana=0,maxMana=100,dead=false,lastR=0,clientID=nil,removeOOB=false,manaVisualUpdateTimer=0,
+local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,mana=0,maxMana=100,dead=false,lastR=0,clientID=nil,removeOOB=false,hudUpdateTimer=0,
+  hudUpdatePeriod = 0.2 --[[seconds before player hud is refreshed]], manaRegen = 2, --mana/sec
 getDrawData=function(self)
-  return {pos=self.pos,img='katara',r=self.lastR,dead=self.dead,hpP=self.hp/self.maxHp,manaP=self.mana/self.maxMana,h=self.height}
+  return {pos=self.pos,img='katara',r=self.lastR,dead=self.dead,hpP=self.hp/self.maxHp,h=self.height}
 end})
 
 function Player:move(request)
@@ -47,9 +48,8 @@ function Player:triggerAbility(name,request)
     local ability = abilities[name]
     if ability then
       if request.press then
-        if self.mana>=ability.cost then
+        if self.mana>=ability.cost or (ability.castMode=='hold' and self.mana>0) then
           local holdData = {}
-          self.mana = self.mana - ability.cost
           server.updateClientData(self)
           ability:pressed(self,request,holdData)
           if ability.castMode=='hold' then
@@ -58,6 +58,8 @@ function Player:triggerAbility(name,request)
             holdData.name = name
             holdData.pressRequest = request
             table.insert(self.heldAbilities,holdData) --save to held abilities, saving the original request data
+          else
+            self.mana = self.mana - ability.cost
           end
         end
       else
@@ -79,6 +81,8 @@ function Player:triggerAbility(name,request)
     end
   end
 end
+
+function Player:sendHUDStat(k,v) server.request({k=k,v=v},'setHudStat',self.clientID) end
 function Player:setInputFlags(...)
   local args = {...}
   if #args%2==1 then error('Player:setInputFlags() takes arguements in form: flagname1,value1,flagname2,value2...') end
@@ -86,27 +90,32 @@ function Player:setInputFlags(...)
 end
 
 function Player:update(dt)
+  if self.heldAbilities then --Update held abilities
+    for i=1,#self.heldAbilities do
+      local holdData = self.heldAbilities[i]
+      local ability = abilities[holdData.name]
+      ability:held(self,holdData,dt)
+      self.mana = self.mana - ability.cost*dt
+    end
+  end
+
+  if self.mana < 0 then self.mana = 0 end --Update mana
   if self.mana < self.maxMana then
-    self.mana = self.mana + dt*5
-    self.manaVisualUpdateTimer = self.manaVisualUpdateTimer + dt
-    if self.manaVisualUpdateTimer>1/4 then
-      server.updateClientData(self)
-      self.manaVisualUpdateTimer = 0
+    self.mana = self.mana + dt*self.manaRegen
+    self.hudUpdateTimer = self.hudUpdateTimer + dt
+    if self.hudUpdateTimer>self.hudUpdatePeriod then
+      self:sendHUDStat('manaP',self.mana/self.maxMana)
+      self.hudUpdateTimer = 0
     end
   else
     self.mana = self.maxMana
-  end
-  if self.heldAbilities then
-    for i=1,#self.heldAbilities do
-      local holdData = self.heldAbilities[i]
-      abilities[holdData.name]:held(self,holdData)
-    end
   end
 end
 
 function Player:onCreate()
   self.hp, self.mana = self.maxHp, self.maxMana
   server.updateClientData(self)
+  self:sendHUDStat('manaP',self.mana/self.maxMana)
 end
 function Player:setHp(x)
   self.hp = x

@@ -7,7 +7,8 @@ local client = {
   playerID = nil, --unique id of the client's player game object
   --Stats for debug:
   sent = 0,
-  recieved = 0
+  recieved = 0,
+  hudStats = {}
 }
 local server --bound peer object that it is connected to
 local objects = {} --client-side objects list to draw graphics, interpret inputs and provide instant feedback with
@@ -93,7 +94,8 @@ function client.handleRequest(from,request) --requests are recieved from the ser
   elseif request.type=='changeObj' then
     objects[request.id] = request.data
     objects[request.id].id = request.id --restore lost id
-  elseif request.type=='setInputFlag' then input.send[request.flag] = request.value end
+  elseif request.type=='setInputFlag' then input.send[request.flag] = request.value
+  elseif request.type=='setHudStat' then client.hudStats[request.k] = request.v end
 end
 
 return client

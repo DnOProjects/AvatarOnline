@@ -13,6 +13,7 @@ function Object:getDrawData() return {} end
 function Object:onCreate(request) end --called once the object has been added to the game
 function Object:initialise(request) end --called while the object is being created to add to the game
 function Object:onTouches(object) end
+function Object:updateTouch(object,dt) end --called while the object is touching another
 function Object:onLeaves(object) end
 function Object:setPos(pos) self.pos = pos end
 
@@ -37,12 +38,16 @@ function Object:touching(object)
   if object.hitEnd then return self.pos:distanceToLine(object.pos,object.hitEnd) < (object.hitR+self.hitR) end
   return self.pos..object.pos < (object.hitR+self.hitR)
 end
-function Object:updateTouches()
+function Object:updateTouches(dt)
   if not self.currentlyTouching then self.currentlyTouching = {} end --creates table if doesnt exist
   for i, object in ipairs(Objects) do --Add touching objects
-      if self:touching(object) and (not utils.inList(object.id,self.currentlyTouching)) then
-        table.insert(self.currentlyTouching,object.id)
-        self:onTouches(object)
+      if self:touching(object) then
+        if not utils.inList(object.id,self.currentlyTouching) then
+          table.insert(self.currentlyTouching,object.id)
+          self:onTouches(object)
+        else
+          self:updateTouch(object,dt)
+        end
       end
   end
   for i=#self.currentlyTouching,1,-1 do --Remove touching objects

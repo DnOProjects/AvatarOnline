@@ -1,7 +1,7 @@
 local hud = {}
 
 local function meter(p,pos,size,col,args)
-  local args = args or {}
+  local args,p = args or {}, p or 0
   local args = {alpha = args.alpha or 1/2, roundedness = args.roundedness or 1, border=args.border or 0.1}
 
   local shortestSide = math.min(size.x,size.y)
@@ -75,7 +75,7 @@ local selectionMenu = {pos = Vec(200,200), items={
 
 function hud.draw()
   meter(client.player.hpP,Vec(0,1030),Vec(600,50),Col(1,0,0))
-  meter(client.player.manaP,Vec(0,985),Vec(400,50),Col(0.2,0.64,0.95))
+  meter(client.hudStats.manaP,Vec(0,985),Vec(400,50),Col(0.2,0.64,0.95))
 
   for i, obj in ipairs(Objects) do
     if obj.hpP and i~=client.playerID and (not obj.dead) then
