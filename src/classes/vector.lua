@@ -16,13 +16,16 @@ function Vec(x,y)
 	local y = y or 0
 	return Vector:obj({x=x,y=y})
 end
-function VecMouse() return Vec(love.mouse.getX(),love.mouse.getY())/gameRenderScale - Vec(xPadding,yPadding) end
+function VecMouse() return Vec(love.mouse.getX(),love.mouse.getY()):screenToGame() end
 function VecSquare(x) return Vec(x,x) end
 function VecSize(object) return Vec(object:getWidth(),object:getHeight()) end
 function VecWin() return VecSize(love.graphics) end
 function VecPol(mag,dir) return Vec(math.cos(dir),math.sin(dir))*mag end
 function ConstructVec(args) return Vec(args.x,args.y) end
 Cardinals = {Vec(0,1),Vec(1,0),Vec(-1,0),Vec(0,-1)}
+
+function Vector:screenToGame() return self/gameRenderScale - Vec(xPadding,yPadding) end
+function Vector:gameToScreen() return gameRenderScale*(self+Vec(xPadding,yPadding)) end
 
 function Vector:print() print(self:getText()) end
 function Vector:floor() return Vec(math.floor(self.x),math.floor(self.y)) end

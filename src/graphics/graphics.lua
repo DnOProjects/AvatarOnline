@@ -15,13 +15,14 @@ function graphics.draw()
       for i,obj in ipairs(Objects) do
         if obj.light and not obj.trash and obj.h>=h  then
           local intensity,spread,type,dir,length,col, endPos = obj.light.intensity or 1, obj.light.spread or 50, 'point', obj.light.dir, obj.light.length, obj.light.col, obj.light.endPos
+          if endPos then endPos = endPos:gameToScreen() end
           if obj.light.length or obj.light.endPos then type='line' end
           if obj.light.flash then --flash is a percentage
             local a,b = (1-obj.light.flash)*50, 100-(1-obj.light.flash)*50
             spread = math.random(a,b)/100*spread
             col = col:overBrighten(math.random(0,obj.light.flash*100)/100):mix(ColRand(),0.8)
           end
-          shaderMan.light(graphics.objPos(obj),{col=col,intensity=intensity,spread=spread,type=type,dir=dir,length=length,endPos=endPos})
+          shaderMan.light(graphics.objPos(obj):gameToScreen(),{col=col,intensity=intensity,spread=spread,type=type,dir=dir,length=length,endPos=endPos})
         end
       end
       shaderMan.send() --must be called after all calls to shaderMan.light
