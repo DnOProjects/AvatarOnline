@@ -22,7 +22,7 @@ newAbility('bubble',{cost=2,pressed = function(self,caster,request)
   game.createObject('bubble',{vel=request.dir*200,pos=caster.pos,ownerID=request.id,height=caster.height})
 end})
 
-newAbility('Laser',{cost=5,castMode = 'hold',
+newAbility('Laser',{cost=10,castMode = 'hold',
 pressed = function(self,caster,request,holdData)
   caster:setInputFlags('mousePos',true,'moveKeys',false)
   local laser = game.createObject('laser',{dir=request.dir,pos=caster.pos,length=10000,ownerID=request.id,height=caster.height,activation=0})

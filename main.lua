@@ -31,7 +31,7 @@ DEBUG = {
 enableShaders = true
 
 function love.load()
-	love.window.setFullscreen(false)
+	love.window.setFullscreen(true)
 	client.load()
 end
 

@@ -1,5 +1,5 @@
 local Player = Object:new('player',{player=true,hp=0,hitR=37,maxHp=100,mana=0,maxMana=100,dead=false,lastR=0,clientID=nil,removeOOB=false,hudUpdateTimer=0,heldAbilities={},
-  hudUpdatePeriod = 0.2 --[[seconds before player hud is refreshed]], manaRegen = 2, --mana/sec
+  hudUpdatePeriod = 0.2 --[[seconds before player hud is refreshed]], manaRegen = 5, --mana/sec
 getDrawData=function(self)
   return {pos=self.pos,img='katara',r=self.lastR,dead=self.dead,hpP=self.hp/self.maxHp,h=self.height}
 end})
@@ -91,11 +91,15 @@ end
 
 function Player:update(dt)
   if self.heldAbilities then --Update held abilities
-    for i=1,#self.heldAbilities do
+    for i=#self.heldAbilities,1,-1 do
       local holdData = self.heldAbilities[i]
       local ability = abilities[holdData.name]
       ability:held(self,holdData,dt)
       self.mana = self.mana - ability.cost*dt
+      if self.mana<0 then
+        ability:released(self,nil,holdData)
+        table.remove(self.heldAbilities,i) --TODO: see if this messes up key checks
+      end
     end
   end
 
