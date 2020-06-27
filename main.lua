@@ -48,6 +48,7 @@ function love.draw()
 
 	ui.drawBackgrounds()
 	client.draw()
+	
 --	if Hosting then server.draw() end --for debug ONLY
   	debugger.draw()
 

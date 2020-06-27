@@ -24,7 +24,24 @@ local Laser = Object:new('laser',
 )
 
 function Laser:updateEnd()
-  self.hitEnd = self.pos + self.dir*self.length
+  self.hitEnd = self.pos + self.dir*self.length --set end to max
+  --Generate list of possible colliders (cliff walls)
+  local colliders = {}
+  for x=1,GridSize.x do
+    for y=1,GridSize.y do
+      if Grid[x][y].h>self.height then
+        --Find corners a,b,c&d
+        local a = Vec(x-1,y-1)*200
+        local b,c,d = a+Vec(200,0), a+Vec(0,200), a+Vec(200,200)
+        colliders[#colliders+1] = Line(a,b)
+        colliders[#colliders+1] = Line(a,c)
+        colliders[#colliders+1] = Line(b,d)
+        colliders[#colliders+1] = Line(c,d)
+      end
+    end
+  end
+  local collision = Line(self.pos,self.hitEnd):closestIntersection(colliders)
+  if collision then self.hitEnd = collision end
   server.updateClientData(self)
 end
 function Laser:setDir(dir)

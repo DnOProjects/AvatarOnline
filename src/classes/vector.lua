@@ -66,3 +66,43 @@ function Vector:distanceToLine(a,b) -- line segment a-b (copied fctn from web), 
 	local apMag, abMag = ap:getMag(), ab:getMag()
 	return apMag * math.sin(math.acos(ap:dot(ab)/(apMag*abMag)))
 end
+
+
+-------------
+
+
+local LineSegment = Class:new('lineSegment',{}) --a line segment between points A and B holds A,B and vector V, (the offset between A and B)
+function Line(a,b)
+	local v = b-a
+	if v.x==0 then v.x=0.1 end --cause i cba to fix a bug
+	if v.y==0 then v.y=0.1 end --cause i cba to fix a bug
+	return LineSegment:obj({a=a,b=b,v=v})
+end
+
+function LineSegment:draw()
+	self.a:drawPos()
+	self.b:drawPos()
+	love.graphics.line(self.a.x,self.a.y,self.b.x,self.b.y)
+end
+function LineSegment:intersection(other)
+	--a1 + t1xv1 = a2 + t2xv2, where both ts belong to [0,1]
+	otherGrad = other.v.y/other.v.x
+	t1 = (other.a.y-self.a.y+otherGrad*(self.a.x-other.a.x)) / (self.v.y-otherGrad*self.v.x)
+	if t1>=0 and t1<=1 then
+		t2 = (self.a.x-other.a.x+t1*self.v.x) / other.v.x
+		if t2>=0 and t2<=1 then return self.a + t1*self.v end
+	end
+end
+function LineSegment:closestIntersection(lines) --returns intersection closest to point A
+	local closestT = nil
+	for i=1,#lines do
+		local other = lines[i]
+		otherGrad = other.v.y/other.v.x
+		t1 = (other.a.y-self.a.y+otherGrad*(self.a.x-other.a.x)) / (self.v.y-otherGrad*self.v.x)
+		if (t1>=0 and t1<=1) and (closestT==nil or t1<closestT) then
+			t2 = (self.a.x-other.a.x+t1*self.v.x) / other.v.x
+			if t2>=0 and t2<=1 then closestT = t1 end
+		end
+	end
+	if closestT then return self.a + closestT*self.v end
+end
